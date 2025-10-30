@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from '@inertiajs/react';
 
-export default function Support({ auth }) { // props auth: true/false dari backend
+export default function Support({ auth }) {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         email: '',
@@ -19,11 +19,9 @@ export default function Support({ auth }) { // props auth: true/false dari backe
 
     const handleBack = () => {
         if (auth) {
-            // jika sudah login, kembali ke halaman sebelumnya
             window.history.back();
         } else {
-            // jika guest, ke halaman welcome
-            window.location.href = route('welcome'); // pastikan route('welcome') ada di Laravel
+            window.location.href = route('welcome');
         }
     };
 
@@ -50,7 +48,7 @@ export default function Support({ auth }) { // props auth: true/false dari backe
                         <label className="block mb-1 font-semibold">Nama</label>
                         <input
                             type="text"
-                            className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 focus:ring-0 border-none font-bold"
+                            className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 focus:ring-0 border-none"
                             placeholder='Masukan nama anda'
                             value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
@@ -62,7 +60,7 @@ export default function Support({ auth }) { // props auth: true/false dari backe
                         <label className="block mb-1 font-semibold">Email</label>
                         <input
                             type="email"
-                            className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 focus:ring-0 border-none font-bold"
+                            className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 focus:ring-0 border-none"
                             placeholder='Masukan email anda'
                             value={data.email}
                             onChange={(e) => setData('email', e.target.value)}
@@ -73,7 +71,7 @@ export default function Support({ auth }) { // props auth: true/false dari backe
                     <div>
                         <label className="block mb-1 font-semibold">Pesan</label>
                         <textarea
-                            className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 focus:ring-0 border-none font-bold"
+                            className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 focus:ring-0 border-none"
                             placeholder='Masukan pesan anda disini...'
                             rows="5"
                             value={data.message}
