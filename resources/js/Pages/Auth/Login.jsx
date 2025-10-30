@@ -44,7 +44,13 @@ export default function Login({ status, canResetPassword }) {
                 </div>
 
                 {/* Kanan - Form */}
-                <div className="flex-1 flex flex-col max-w-lg    justify-center p-8 md:p-12">
+                <div className="flex-1 flex flex-col max-w-lg justify-center p-8 md:p-12">
+                    <Link
+                        href="/"
+                        className="mb-4 text-m font-bold text-gray-600 underline hover:text-gray-800"
+                    >
+                        &larr; Kembali
+                    </Link>
                     <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center md:text-left">
                         Login ke Akun Anda
                     </h2>
