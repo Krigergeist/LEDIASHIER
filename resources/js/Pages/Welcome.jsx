@@ -53,7 +53,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                             href={route('login')}
                             className="text-2xl ml-6 px-[77px] py-[20px] text-white rounded-lg bg-gray-400 drop-shadow-lg font-bold shadow hover:bg-gray-500 transition"
                         >
-                            <p classname="">Masuk</p>
+                            Masuk
                         </Link>
                     </div>
                 </section>
