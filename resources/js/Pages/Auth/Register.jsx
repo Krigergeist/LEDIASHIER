@@ -8,15 +8,15 @@ import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
-        name: '',
-        email: '',
-        password: '',
-        password_confirmation: '',
+        usr_name: '',
+        usr_email: '',
+        usr_password: '',
+        usr_password_confirmation: '',
     });
 
     useEffect(() => {
         return () => {
-            reset('password', 'password_confirmation');
+            reset('usr_password', 'usr_password_confirmation');
         };
     }, []);
 
@@ -30,6 +30,7 @@ export default function Register() {
             <Head title="Register" />
 
             <div className="flex w-full">
+                {/* Bagian kiri (ilustrasi) */}
                 <div className="hidden md:flex max-w-lg flex-col justify-center items-start w-1/2 bg-sky-500 p-12 rounded-lg">
                     <div>
                         <Link href="/">
@@ -43,6 +44,7 @@ export default function Register() {
                     </div>
                 </div>
 
+                {/* Form Register */}
                 <div className="flex-1 flex flex-col max-w-lg justify-center p-8 md:p-12">
                     <Link
                         href="/"
@@ -57,71 +59,71 @@ export default function Register() {
 
                     <form onSubmit={submit} className="space-y-5">
                         <div>
-                            <InputLabel htmlFor="name" value="Nama Lengkap" />
-                            <TextInput
-                                id="name"
-                                name="name"
-                                value={data.name}
+                            <InputLabel htmlFor="usr_name" value="Nama Lengkap" />
+                            <input
+                                id="usr_name"
+                                name="usr_name"
+                                value={data.usr_name}
                                 autoComplete="name"
                                 isFocused={true}
-                                onChange={(e) => setData('name', e.target.value)}
+                                onChange={(e) => setData('usr_name', e.target.value)}
                                 className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 focus:ring-0 border-none"
                                 placeholder="Masukkan nama lengkap"
                                 required
                             />
-                            <InputError message={errors.name} className="mt-2" />
+                            <InputError message={errors.usr_name} className="mt-2" />
                         </div>
 
                         <div>
-                            <InputLabel htmlFor="email" value="Email" />
-                            <TextInput
-                                id="email"
+                            <InputLabel htmlFor="usr_email" value="Email" />
+                            <input
+                                id="usr_email"
                                 type="email"
-                                name="email"
-                                value={data.email}
+                                name="usr_email"
+                                value={data.usr_email}
                                 autoComplete="username"
-                                onChange={(e) => setData('email', e.target.value)}
+                                onChange={(e) => setData('usr_email', e.target.value)}
                                 className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 focus:ring-0 border-none"
                                 placeholder="Masukkan email"
                                 required
                             />
-                            <InputError message={errors.email} className="mt-2" />
+                            <InputError message={errors.usr_email} className="mt-2" />
                         </div>
 
                         <div>
-                            <InputLabel htmlFor="password" value="Password" />
-                            <TextInput
-                                id="password"
+                            <InputLabel htmlFor="usr_password" value="Password" />
+                            <input
+                                id="usr_password"
                                 type="password"
-                                name="password"
-                                value={data.password}
+                                name="usr_password"
+                                value={data.usr_password}
                                 autoComplete="new-password"
-                                onChange={(e) => setData('password', e.target.value)}
+                                onChange={(e) => setData('usr_password', e.target.value)}
                                 className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 focus:ring-0 border-none"
                                 placeholder="Masukkan password"
                                 required
                             />
-                            <InputError message={errors.password} className="mt-2" />
+                            <InputError message={errors.usr_password} className="mt-2" />
                         </div>
 
                         <div>
-                            <InputLabel htmlFor="password_confirmation" value="Konfirmasi Password" />
-                            <TextInput
-                                id="password_confirmation"
+                            <InputLabel htmlFor="usr_password_confirmation" value="Konfirmasi Password" />
+                            <input
+                                id="usr_password_confirmation"
                                 type="password"
-                                name="password_confirmation"
-                                value={data.password_confirmation}
+                                name="usr_password_confirmation"
+                                value={data.usr_password_confirmation}
                                 autoComplete="new-password"
-                                onChange={(e) => setData('password_confirmation', e.target.value)}
+                                onChange={(e) => setData('usr_password_confirmation', e.target.value)}
                                 className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 focus:ring-0 border-none"
                                 placeholder="Ulangi password"
                                 required
                             />
-                            <InputError message={errors.password_confirmation} className="mt-2" />
+                            <InputError message={errors.usr_password_confirmation} className="mt-2" />
                         </div>
 
                         <PrimaryButton
-                            className="w-full bg-sky-500 hover:bg-sky-600 transition text-white py-2 rounded-lg"
+                            className="w-full bg-sky-500 hover:bg-sky-600 transition text-white py-2 rounded-lg !mt-[24\px]"
                             disabled={processing}
                         >
                             Register
