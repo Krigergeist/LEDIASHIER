@@ -18,8 +18,8 @@ return new class extends Migration
             $table->timestamp('usr_email_verified_at')->nullable();
             $table->string('usr_password');
             $table->string('usr_remembered_token')->nullable();
-            $table->timestamp('usr_created_at')->usrCurent();
-            $table->timestamp('usr_created_at')->usrCurent()->useCurrentOnUpdate();
+            $table->timestamp('usr_created_at')->useCurrent();
+            $table->timestamp('usr_updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

@@ -14,8 +14,13 @@ use Inertia\Response;
 
 class AuthenticatedSessionController extends Controller
 {
+    public function username()
+    {
+        return 'usr_email';
+    }
+
     /**
-     * Display the login view.
+     * Tampilkan halaman login.
      */
     public function create(): Response
     {
@@ -26,26 +31,34 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Handle an incoming authentication request.
+     * Proses login user.
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        // Laravel tetap butuh key 'password', tapi kita arahkan ke kolom usr_password lewat model
+        $credentials = [
+            'usr_email' => $request->input('email'),
+            'password' => $request->input('password'),
+        ];
 
-        $request->session()->regenerate();
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $request->session()->regenerate();
+            return redirect()->intended(RouteServiceProvider::HOME);
+        }
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
+        ]);
     }
 
     /**
-     * Destroy an authenticated session.
+     * Logout user.
      */
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
         return redirect('/');

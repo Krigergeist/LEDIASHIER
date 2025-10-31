@@ -60,7 +60,7 @@ export default function Login({ status, canResetPassword }) {
                     <form onSubmit={submit} className="space-y-5">
                         <div>
                             <InputLabel htmlFor="email" value="Email" />
-                            <TextInput
+                            <input
                                 id="email"
                                 type="email"
                                 name="email"
@@ -76,7 +76,7 @@ export default function Login({ status, canResetPassword }) {
 
                         <div>
                             <InputLabel htmlFor="password" value="Password" />
-                            <TextInput
+                            <input
                                 id="password"
                                 type="password"
                                 name="password"
