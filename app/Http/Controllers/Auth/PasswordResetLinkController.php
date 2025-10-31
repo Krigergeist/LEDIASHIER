@@ -9,12 +9,10 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\User;
 
 class PasswordResetLinkController extends Controller
 {
-    /**
-     * Display the password reset link request view.
-     */
     public function create(): Response
     {
         return Inertia::render('Auth/ForgotPassword', [
@@ -22,30 +20,26 @@ class PasswordResetLinkController extends Controller
         ]);
     }
 
-    /**
-     * Handle an incoming password reset link request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'email' => 'required|email',
         ]);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        // Gunakan scopeWhereEmail (dari model) agar otomatis ke usr_email
+        $user = User::whereEmail($request->email)->first();
 
-        if ($status == Password::RESET_LINK_SENT) {
-            return back()->with('status', __($status));
+        if (!$user) {
+            return back()->withErrors(['email' => 'Email tidak ditemukan']);
         }
 
-        throw ValidationException::withMessages([
-            'email' => [trans($status)],
+        // tetap kirim key 'email', karena broker Laravel butuh itu
+        $status = Password::sendResetLink([
+            'email' => $user->usr_email,
         ]);
+
+        return $status === Password::RESET_LINK_SENT
+            ? back()->with('status', __($status))
+            : back()->withErrors(['email' => __($status)]);
     }
 }
