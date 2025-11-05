@@ -17,7 +17,7 @@ return new class extends Migration
             $table->decimal('prd_price', 12, 2)->nullable();
             $table->integer('prd_stock')->nullable();
             $table->text('prd_description')->nullable();
-            $table->string('prd_img')->nullable();
+            $table->string('prd_iumg')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
