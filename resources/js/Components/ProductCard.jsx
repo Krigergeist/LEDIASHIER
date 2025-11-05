@@ -1,0 +1,60 @@
+import React, { useState } from 'react';
+import { router } from "@inertiajs/react";
+
+export default function ProductCard({ product, onEdit }) {
+    const [showDesc, setShowDesc] = useState(false);
+
+    function handleDelete() {
+        if (!confirm('Hapus produk ini?')) return;
+        router.delete(route('products.destroy', product.id));
+    }
+
+    return (
+        <div className="bg-white rounded-lg shadow p-5 w-full max-w-[260px] flex flex-col items-center text-center shadow-[0_4px_12px_rgba(0,0,0,0.12)]">
+            <div className="w-full h-[160px] flex flex-col items-center justify-center bg-[#E8F0FE] rounded-md mb-4 overflow-hidden shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)]">
+                {product.prd_img ? (
+                    <img
+                        src={`/storage/${product.prd_img}`}
+                        alt={product.prd_name}
+                        className="max-h-full max-w-full object-cover "
+                    />
+                ) : (
+                    <div className="text-gray-400">No Image</div>
+                )}
+            </div>
+            <div className='flex flex-col justify-end w-full text-left'>
+                <div className="text-lg font-semibold">{product.prd_name}</div>
+                <div className="mt-2 flex flex-row">
+
+                    <div className="flex flex-col">
+                        <div className='font-medium'>Kode</div>
+                        <div className='font-medium'>Harga</div>
+                        <div className='font-medium'>Stok</div>
+                    </div>
+                    <div className="ms-2 flex flex-col">
+                        <div className='font-medium'>:</div>
+                        <div className='font-medium'>:</div>
+                        <div className='font-medium'>:</div>
+                    </div>
+                    <div className="ms-2 flex flex-col">
+                        <div className="font-medium'>">{product.prd_code}</div>
+                        <div className='font-medium'>Rp. {Number(product.prd_price).toLocaleString()}</div>
+                        <div className='font-medium'>{product.prd_stock}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex flex-row w-full max-w-[230px] gap-3 mt-4">
+                <button onClick={() => setShowDesc(!showDesc)} className="w-full px-3 py-1 border rounded">Detail</button>
+                <button onClick={onEdit} className="w-full px-3 py-1 border rounded">Edit</button>
+                <button onClick={handleDelete} className="w-full px-3 py-1 border rounded text-red-600">Hapus</button>
+            </div>
+
+            {showDesc && (
+                <div className="mt-3 text-left w-full text-sm text-gray-700 border-t pt-3">
+                    {product.prd_description}
+                </div>
+            )}
+        </div>
+    );
+}
