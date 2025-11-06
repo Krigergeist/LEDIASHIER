@@ -20,7 +20,7 @@ class CreateTransactionsTable extends Migration
             $table->decimal('tsn_paid_return', 15, 2)->default(0);
             $table->timestamps();
 
-            $table->foreign('tsn_usr_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('tsn_usr_id')->references('usr_id')->on('users')->onDelete('cascade');
             $table->foreign('tsn_csm_id')->references('csm_id')->on('customers')->onDelete('set null');
         });
     }
