@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -10,21 +10,27 @@ use App\Models\TransactionDetail;
 use App\Models\Debt;
 use App\Models\Customer;
 use Carbon\Carbon;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class TransactionController extends Controller
 {
-    // GET /api/transactions
-    public function index()
+    public function index(): Response
     {
-        $transactions = Transaction::with(['user', 'customer', 'details.product', 'debt'])->latest()->paginate(20);
-        return response()->json($transactions);
+        $transactions = Transaction::with(['user', 'customer', 'details.product', 'debt'])
+            ->latest()->paginate(20);
+
+        return Inertia::render('Transactions/Index', [
+            'transactions' => $transactions,
+            'customers' => \App\Models\Customer::all(['csm_id', 'csm_name']),
+            'products' => \App\Models\Product::all(['prd_id', 'prd_name', 'prd_price']),
+        ]);
     }
 
     // POST /api/transactions
     public function store(Request $request)
     {
         $data = $request->validate([
-            'tsn_usr_id' => 'required|exists:users,id',
             'tsn_csm_id' => 'nullable|exists:customers,csm_id',
             'tsn_metode' => 'nullable|string',
             'tsn_paid' => 'required|numeric|min:0',
@@ -44,14 +50,15 @@ class TransactionController extends Controller
             }
 
             $transaction = Transaction::create([
-                'tsn_usr_id' => $data['tsn_usr_id'],
+                'tsn_usr_id' => auth()->user()->usr_id,
                 'tsn_csm_id' => $data['tsn_csm_id'] ?? null,
-                'tsn_date' => Carbon::now(),
+                'tsn_date' => now(),
                 'tsn_metode' => $data['tsn_metode'] ?? null,
                 'tsn_total' => $total,
                 'tsn_paid' => $data['tsn_paid'],
                 'tsn_paid_return' => $data['tsn_paid_return'] ?? 0,
             ]);
+
 
             // create details
             foreach ($request->details as $d) {
@@ -89,46 +96,40 @@ class TransactionController extends Controller
     // POST /api/transactions/{tsn}/confirm-debt
     public function confirmDebt(Request $request, $tsnId)
     {
-        $request->validate([
+        $data = $request->validate([
+            'deb_csm_id' => 'required|exists:customers,csm_id',
             'deb_due_date' => 'nullable|date',
-            'deb_paid_amount' => 'nullable|numeric|min:0',
         ]);
 
-        $transaction = Transaction::with('details')->findOrFail($tsnId);
-        $remaining = round($transaction->tsn_total - $transaction->tsn_paid, 2);
+        $transaction = Transaction::findOrFail($tsnId);
+        $remaining = $transaction->tsn_total - $transaction->tsn_paid;
 
         if ($remaining <= 0) {
-            return response()->json(['message' => 'Tidak ada sisa hutang untuk transaksi ini.'], 400);
-        }
-
-        if (!$transaction->tsn_csm_id) {
-            return response()->json(['message' => 'Transaksi ini belum terkait customer. Silakan pilih customer untuk membuat hutang.'], 422);
-        }
-
-        $debPaid = $request->input('deb_paid_amount', 0);
-        if ($debPaid > $remaining) {
-            return response()->json(['message' => 'deb_paid_amount tidak boleh lebih besar dari sisa hutang.'], 422);
+            return response()->json(['message' => 'Tidak ada sisa hutang.'], 400);
         }
 
         DB::beginTransaction();
         try {
             $debt = Debt::create([
                 'deb_tsn_id' => $transaction->tsn_id,
-                'deb_csm_id' => $transaction->tsn_csm_id,
+                'deb_csm_id' => $data['deb_csm_id'],
                 'deb_amount' => $remaining,
-                'deb_paid_amount' => $debPaid,
-                'deb_due_date' => $request->input('deb_due_date') ? Carbon::parse($request->input('deb_due_date')) : Carbon::now()->addDays(30),
-                'deb_status' => $debPaid <= 0 ? 'unpaid' : ($debPaid < $remaining ? 'partial' : 'paid'),
+                'deb_paid_amount' => 0,
+                'deb_due_date' => $data['deb_due_date'] ?? now()->addDays(30),
+                'deb_status' => 'unpaid',
             ]);
 
-            DB::commit();
+            // update transaksi agar terkait customer
+            $transaction->update(['tsn_csm_id' => $data['deb_csm_id']]);
 
-            return response()->json(['message' => 'Debt dibuat.', 'debt' => $debt], 201);
-        } catch (\Exception $e) {
+            DB::commit();
+            return response()->json(['message' => 'Debt berhasil dibuat.', 'debt' => $debt], 201);
+        } catch (\Throwable $e) {
             DB::rollBack();
             return response()->json(['message' => 'Gagal membuat debt', 'error' => $e->getMessage()], 500);
         }
     }
+
 
     // DELETE /api/transactions/{tsn}  -> cancel
     public function destroy($tsnId)
