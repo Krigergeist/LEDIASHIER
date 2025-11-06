@@ -28,7 +28,7 @@ class ProductController extends Controller
         }
 
         // Ambil hanya 10 item per halaman
-        $products = $query->orderBy('id', 'desc')->paginate(12);
+        $products = $query->orderBy('prd_id', 'desc')->paginate(12);
 
         return inertia('Products/Index', [
             'products' => $products,
