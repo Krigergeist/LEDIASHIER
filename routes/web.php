@@ -7,16 +7,6 @@ use Inertia\Inertia;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Api\TransactionController;
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -51,10 +41,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('products', ProductController::class);
 });
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/transactions', [TransactionController::class, 'index']);
-    Route::get('/transactions/{tsn}', [TransactionController::class, 'show']);
-    Route::post('/transactions', [TransactionController::class, 'store']);
-    Route::post('/transactions/{tsn}/confirm-debt', [TransactionController::class, 'confirmDebt']);
-    Route::delete('/transactions/{tsn}', [TransactionController::class, 'destroy']);
+Route::middleware(['auth'])->group(function () {
+    Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+    Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store');
+    Route::post('/transactions/{tsn}/confirm-debt', [TransactionController::class, 'confirmDebt'])->name('transactions.confirmDebt');
+    Route::delete('/transactions/{tsn}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
 });
