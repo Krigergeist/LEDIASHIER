@@ -11,7 +11,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('products', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('prd_id');
             $table->string('prd_code')->unique();
             $table->string('prd_name');
             $table->decimal('prd_price', 12, 2)->nullable();
