@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Api\TransactionController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -46,9 +47,14 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__ . '/auth.php';
 
-
-
-
 Route::middleware(['auth'])->group(function () {
     Route::resource('products', ProductController::class);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/transactions', [TransactionController::class, 'index']);
+    Route::get('/transactions/{tsn}', [TransactionController::class, 'show']);
+    Route::post('/transactions', [TransactionController::class, 'store']);
+    Route::post('/transactions/{tsn}/confirm-debt', [TransactionController::class, 'confirmDebt']);
+    Route::delete('/transactions/{tsn}', [TransactionController::class, 'destroy']);
 });
