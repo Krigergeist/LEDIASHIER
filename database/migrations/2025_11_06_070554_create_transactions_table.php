@@ -18,6 +18,7 @@ class CreateTransactionsTable extends Migration
             $table->decimal('tsn_total', 15, 2)->default(0);
             $table->decimal('tsn_paid', 15, 2)->default(0);
             $table->decimal('tsn_paid_return', 15, 2)->default(0);
+            $table->softDeletes();
             $table->timestamps();
 
             $table->foreign('tsn_usr_id')->references('usr_id')->on('users')->onDelete('cascade');
