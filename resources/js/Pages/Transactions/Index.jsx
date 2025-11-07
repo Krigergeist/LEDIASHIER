@@ -1,287 +1,146 @@
 import React, { useState } from "react";
-import { router, usePage } from "@inertiajs/react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Link, router, usePage } from "@inertiajs/react";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
-export default function TransactionsIndex({ customers = [], products = [] }) {
-    const { flash } = usePage().props;
-    const [form, setForm] = useState({
-        tsn_usr_id: "",
-        tsn_csm_id: "",
-        tsn_metode: "cash",
-        tsn_paid: "",
-        details: [],
-    });
+export default function Index() {
+    const { transactions, flash } = usePage().props;
+    const [search, setSearch] = useState("");
 
-    const [selectedProduct, setSelectedProduct] = useState("");
-    const [qty, setQty] = useState(1);
-    const [price, setPrice] = useState(0);
-    const [modal, setModal] = useState(null);
-    const [responseData, setResponseData] = useState(null);
-
-    // Tambah item ke detail transaksi
-    const addDetail = () => {
-        if (!selectedProduct || qty <= 0 || price <= 0) return;
-        setForm({
-            ...form,
-            details: [
-                ...form.details,
-                { tsnd_prd_id: selectedProduct, tsnd_qty: qty, tsnd_price: price },
-            ],
-        });
-        setSelectedProduct("");
-        setQty(1);
-        setPrice(0);
-    };
-
-    // Hapus item
-    const removeDetail = (i) => {
-        const newDetails = [...form.details];
-        newDetails.splice(i, 1);
-        setForm({ ...form, details: newDetails });
-    };
-
-    // Hitung total
-    const total = form.details.reduce(
-        (acc, d) => acc + d.tsnd_qty * d.tsnd_price,
-        0
-    );
-
-    // Submit transaksi
-    const submit = (e) => {
+    const handleSearch = (e) => {
         e.preventDefault();
-        router.post(
-            "/transactions",
-            { ...form, tsn_total: total },
-            {
-                preserveScroll: true,
-                onSuccess: (page) => {
-                    const response = page.props.flash?.response || {};
-                    if (response.requires_confirmation) {
-                        setResponseData(response);
-                        setModal("confirm");
-                    } else {
-                        setModal("success");
-                    }
-                },
-                onError: (err) => alert("Gagal menyimpan transaksi"),
-            }
-        );
+        router.get("/transactions", { search }, { preserveState: true });
     };
 
-    // Konfirmasi kasir: buat hutang
-    const confirmDebt = () => {
-        router.post(
-            `/transactions/${responseData.transaction.tsn_id}/confirm-debt`,
-            {},
-            {
-                onSuccess: () => {
-                    setModal("success");
-                },
-            }
-        );
+    const handleSort = (column) => {
+        const currentSort = new URLSearchParams(window.location.search).get("sort");
+        const currentDir = new URLSearchParams(window.location.search).get("dir") || "asc";
+        const newDir = currentSort === column && currentDir === "asc" ? "desc" : "asc";
+        router.get("/transactions", { sort: column, dir: newDir, search }, { preserveState: true });
     };
 
-    // Batalkan transaksi
-    const cancelTransaction = () => {
-        router.delete(`/transactions/${responseData.transaction.tsn_id}`, {
-            onSuccess: () => setModal(null),
-        });
-    };
 
     return (
-        <div className="p-8 max-w-5xl mx-auto">
-            <h1 className="text-2xl font-bold mb-6">Transaksi Baru</h1>
-
-            {/* Flash Message */}
-            {flash?.success && (
-                <div className="p-3 mb-4 bg-green-100 text-green-700 rounded-xl">
-                    {flash.success}
-                </div>
-            )}
-
-            <form onSubmit={submit} className="space-y-4">
-                {/* Customer */}
-                <div>
-                    <label className="block text-sm font-semibold mb-1">Customer</label>
-                    <select
-                        value={form.tsn_csm_id}
-                        onChange={(e) => setForm({ ...form, tsn_csm_id: e.target.value })}
-                        className="w-full border p-2 rounded-xl"
+        <AuthenticatedLayout title="Transactions">
+            <div className="bg-white p-6 rounded shadow">
+                <div className="flex justify-between mb-4">
+                    <h1 className="text-xl font-bold">Transactions</h1>
+                    <Link
+                        href="/transactions/create"
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
                     >
-                        <option value="">Pilih Customer</option>
-                        {customers.map((c) => (
-                            <option key={c.csm_id} value={c.csm_id}>
-                                {c.csm_name}
-                            </option>
-                        ))}
-                    </select>
+                        Add Transaction
+                    </Link>
                 </div>
 
-                {/* Produk */}
-                <div className="grid grid-cols-5 gap-2 items-end">
-                    <select
-                        value={selectedProduct}
-                        onChange={(e) => setSelectedProduct(e.target.value)}
-                        className="border p-2 rounded-xl col-span-2"
-                    >
-                        <option value="">Pilih Produk</option>
-                        {products.map((p) => (
-                            <option key={p.prd_id} value={p.prd_id}>
-                                {p.prd_name}
-                            </option>
-                        ))}
-                    </select>
-
+                {/* Search */}
+                <form onSubmit={handleSearch} className="mb-4 flex gap-2">
                     <input
-                        type="number"
-                        value={qty}
-                        onChange={(e) => setQty(parseInt(e.target.value))}
-                        className="border p-2 rounded-xl"
-                        placeholder="Qty"
+                        type="text"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="Cari customer..."
+                        className="border p-2 rounded w-1/3"
                     />
-                    <input
-                        type="number"
-                        value={price}
-                        onChange={(e) => setPrice(parseFloat(e.target.value))}
-                        className="border p-2 rounded-xl"
-                        placeholder="Harga"
-                    />
-                    <button
-                        type="button"
-                        onClick={addDetail}
-                        className="bg-blue-600 text-white rounded-xl py-2 hover:bg-blue-700"
-                    >
-                        Tambah
-                    </button>
-                </div>
+                    <button className="px-4 bg-green-500 text-white rounded">Cari</button>
+                </form>
 
-                {/* Tabel Detail */}
-                <table className="w-full mt-4 border rounded-xl">
-                    <thead className="bg-gray-100 text-left">
-                        <tr>
-                            <th className="p-2">Produk</th>
-                            <th className="p-2">Qty</th>
-                            <th className="p-2">Harga</th>
-                            <th className="p-2">Subtotal</th>
-                            <th></th>
+                {/* Flash message */}
+                {flash?.success && (
+                    <div className="mb-4 p-3 bg-green-100 text-green-700 rounded">{flash.success}</div>
+                )}
+                {flash?.error && (
+                    <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">{flash.error}</div>
+                )}
+
+                {/* Table */}
+                <table className="w-full border">
+                    <thead>
+                        <tr className="bg-gray-200">
+                            {[
+                                ["tsn_id", "ID"],
+                                ["customer.csm_name", "Customer"],
+                                ["tsn_date", "Date"],
+                                ["tsn_metode", "Method"],
+                                [null, "Products"],
+                                ["total_qty", "Qty"],
+                                ["tsn_total", "Total"],
+                                [null, "Actions"],
+                            ].map(([col, title]) => (
+                                <th
+                                    key={title}
+                                    className="p-2 border text-left cursor-pointer select-none"
+                                    onClick={() => col && handleSort(col)}
+                                >
+                                    {title}
+                                </th>
+                            ))}
                         </tr>
                     </thead>
                     <tbody>
-                        {form.details.map((d, i) => (
-                            <tr key={i} className="border-t">
-                                <td className="p-2">{products.find((p) => p.prd_id == d.tsnd_prd_id)?.prd_name}</td>
-                                <td className="p-2">{d.tsnd_qty}</td>
-                                <td className="p-2">{d.tsnd_price.toLocaleString()}</td>
-                                <td className="p-2">
-                                    {(d.tsnd_qty * d.tsnd_price).toLocaleString()}
-                                </td>
-                                <td className="p-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => removeDetail(i)}
-                                        className="text-red-500 hover:underline"
-                                    >
-                                        Hapus
-                                    </button>
+                        {transactions.data.length > 0 ? (
+                            transactions.data.map((tx) => (
+                                <tr key={tx.tsn_id}>
+                                    <td className="p-2 border">{tx.tsn_id}</td>
+                                    <td className="p-2 border">{tx.customer?.csm_name ?? "-"}</td>
+                                    <td className="p-2 border">{tx.tsn_date}</td>
+                                    <td className="p-2 border">{tx.tsn_metode}</td>
+                                    <td className="p-2 border">
+                                        <ul className="list-disc ml-4">
+                                            {tx.details.map((d) => (
+                                                <li key={d.tsnd_id}>
+                                                    {d.product?.prd_name ?? "Produk dihapus"} ({d.tsnd_qty})
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </td>
+                                    <td className="p-2 border">{tx.total_qty}</td>
+                                    <td className="p-2 border">
+                                        Rp {parseInt(tx.tsn_total).toLocaleString("id-ID")}
+                                    </td>
+                                    <td className="p-2 border flex gap-2">
+                                        <Link
+                                            href={`/transactions/${tx.tsn_id}/edit`}
+                                            className="px-2 py-1 bg-yellow-500 text-white rounded text-center"
+                                        >
+                                            Edit
+                                        </Link>
+                                        <button
+                                            onClick={() => {
+                                                if (confirm("Yakin hapus transaksi ini?")) {
+                                                    router.delete(`/transactions/${tx.tsn_id}`);
+                                                }
+                                            }}
+                                            className="px-2 py-1 bg-red-500 text-white rounded text-center"
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="8" className="text-center p-4 text-gray-400">
+                                    No transactions yet.
                                 </td>
                             </tr>
-                        ))}
-                        <tr className="font-bold border-t">
-                            <td colSpan={3} className="p-2 text-right">
-                                Total:
-                            </td>
-                            <td className="p-2">{total.toLocaleString()}</td>
-                            <td></td>
-                        </tr>
+                        )}
                     </tbody>
                 </table>
 
-                {/* Pembayaran */}
-                <div className="mt-4 grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-semibold mb-1">Metode</label>
-                        <input
-                            type="text"
-                            value={form.tsn_metode}
-                            onChange={(e) => setForm({ ...form, tsn_metode: e.target.value })}
-                            className="border p-2 rounded-xl w-full"
+                {/* Pagination */}
+                <div className="mt-4 flex gap-2">
+                    {transactions.links.map((link, i) => (
+                        <button
+                            key={i}
+                            disabled={!link.url}
+                            onClick={() => link.url && router.visit(link.url)}
+                            className={`px-3 py-1 border rounded ${link.active ? "bg-blue-500 text-white" : "bg-gray-100"
+                                }`}
+                            dangerouslySetInnerHTML={{ __html: link.label }}
                         />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-semibold mb-1">
-                            Uang Dibayar
-                        </label>
-                        <input
-                            type="number"
-                            value={form.tsn_paid}
-                            onChange={(e) => setForm({ ...form, tsn_paid: e.target.value })}
-                            className="border p-2 rounded-xl w-full"
-                        />
-                    </div>
+                    ))}
                 </div>
-
-                <button
-                    type="submit"
-                    className="mt-6 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl"
-                >
-                    Simpan Transaksi
-                </button>
-            </form>
-
-            {/* Modal Konfirmasi */}
-            <AnimatePresence>
-                {modal === "confirm" && (
-                    <motion.div
-                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                    >
-                        <div className="bg-white rounded-2xl p-6 w-[400px] text-center">
-                            <h2 className="text-xl font-bold mb-2">Pembayaran Kurang</h2>
-                            <p className="text-gray-600 mb-4">
-                                Sisa yang belum dibayar:{" "}
-                                <span className="font-bold text-red-600">
-                                    Rp {responseData.remaining_amount.toLocaleString()}
-                                </span>
-                            </p>
-                            <div className="flex justify-center gap-3">
-                                <button
-                                    onClick={confirmDebt}
-                                    className="bg-blue-600 text-white px-4 py-2 rounded-xl"
-                                >
-                                    Buat Hutang
-                                </button>
-                                <button
-                                    onClick={cancelTransaction}
-                                    className="bg-red-600 text-white px-4 py-2 rounded-xl"
-                                >
-                                    Batalkan
-                                </button>
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
-
-                {modal === "success" && (
-                    <motion.div
-                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                    >
-                        <div className="bg-white rounded-2xl p-6 w-[400px] text-center">
-                            <h2 className="text-xl font-bold mb-3 text-green-600">
-                                Transaksi Berhasil!
-                            </h2>
-                            <button
-                                onClick={() => setModal(null)}
-                                className="bg-green-600 text-white px-4 py-2 rounded-xl"
-                            >
-                                Tutup
-                            </button>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
+            </div>
+        </AuthenticatedLayout>
     );
 }
