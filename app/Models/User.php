@@ -93,4 +93,8 @@ class User extends Authenticatable
                 ->toArray();
         });
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'tsn_usr_id', 'usr_id');
+    }
 }
