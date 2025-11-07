@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\Api\TransactionController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\CustomerController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -43,7 +44,11 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+    Route::get('/transactions/create', [TransactionController::class, 'create'])->name('transactions.create'); // ✅ tambahkan
     Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store');
-    Route::post('/transactions/{tsn}/confirm-debt', [TransactionController::class, 'confirmDebt'])->name('transactions.confirmDebt');
+    Route::get('/transactions/{tsn}/edit', [TransactionController::class, 'edit'])->name('transactions.edit'); // ✅ tambahkan
+    Route::post('/transactions/{tsnId}/confirm-debt', [TransactionController::class, 'confirmDebt']);
     Route::delete('/transactions/{tsn}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
+
+    Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
 });
