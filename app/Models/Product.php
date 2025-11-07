@@ -12,6 +12,8 @@ class Product extends Model
 
     use SoftDeletes;
 
+    protected $primaryKey = 'prd_id';
+
     protected $fillable = [
         'prd_code',
         'prd_name',
