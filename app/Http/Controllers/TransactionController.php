@@ -2,98 +2,109 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use App\Models\Debt;
 use App\Models\Customer;
+use App\Models\Product;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class TransactionController extends Controller
 {
+    // ✅ Halaman daftar transaksi
     public function index(): Response
     {
         $transactions = Transaction::with(['user', 'customer', 'details.product', 'debt'])
-            ->latest()->paginate(20);
+            ->latest()
+            ->paginate(20);
 
         return Inertia::render('Transactions/Index', [
             'transactions' => $transactions,
-            'customers' => \App\Models\Customer::all(['csm_id', 'csm_name']),
-            'products' => \App\Models\Product::all(['prd_id', 'prd_name', 'prd_price']),
+            'customers' => Customer::all(['csm_id', 'csm_name']),
+            'products' => Product::all(['prd_id', 'prd_name', 'prd_price']),
+            'flash' => session('flash') ?? null,
         ]);
     }
 
-    // POST /api/transactions
+    // ✅ Halaman tambah transaksi (React)
+    public function create(): Response
+    {
+        return Inertia::render('Transactions/Create', [
+            'customers' => Customer::all(['csm_id', 'csm_name']),
+            'products' => Product::all(['prd_id', 'prd_name', 'prd_price']),
+        ]);
+    }
+
+    // ✅ Simpan transaksi baru
+    // ✅ Simpan transaksi baru
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'tsn_csm_id' => 'nullable|exists:customers,csm_id',
-            'tsn_metode' => 'nullable|string',
-            'tsn_paid' => 'required|numeric|min:0',
-            'tsn_paid_return' => 'nullable|numeric|min:0',
-            'details' => 'required|array|min:1',
-            'details.*.tsnd_prd_id' => 'required|exists:products,prd_id',
-            'details.*.tsnd_qty' => 'required|integer|min:1',
-            'details.*.tsnd_price' => 'required|numeric|min:0',
-        ]);
-
-        DB::beginTransaction();
         try {
-            // compute total from details
-            $total = 0;
-            foreach ($request->details as $d) {
-                $total += ($d['tsnd_qty'] * $d['tsnd_price']);
-            }
-
-            $transaction = Transaction::create([
-                'tsn_usr_id' => auth()->user()->usr_id,
-                'tsn_csm_id' => $data['tsn_csm_id'] ?? null,
-                'tsn_date' => now(),
-                'tsn_metode' => $data['tsn_metode'] ?? null,
-                'tsn_total' => $total,
-                'tsn_paid' => $data['tsn_paid'],
-                'tsn_paid_return' => $data['tsn_paid_return'] ?? 0,
+            $validated = $request->validate([
+                'tsn_metode' => 'required|string',
+                'details' => 'required|array|min:1',
+                'details.*.tsnd_prd_id' => 'required|integer|exists:products,prd_id',
+                'details.*.tsnd_qty' => 'required|integer|min:1',
             ]);
 
+            // Pastikan user login tersedia
+            $user = auth()->user();
+            if (!$user) {
+                throw new \Exception("User belum login, tidak bisa menyimpan transaksi.");
+            }
 
-            // create details
-            foreach ($request->details as $d) {
-                TransactionDetail::create([
-                    'tsnd_tsn_id' => $transaction->tsn_id,
-                    'tsnd_prd_id' => $d['tsnd_prd_id'],
-                    'tsnd_qty' => $d['tsnd_qty'],
-                    'tsnd_price' => $d['tsnd_price'],
+            // Simpan transaksi utama
+            $transaction = Transaction::create([
+                'tsn_usr_id' => $user->usr_id ?? $user->id, // sesuaikan kolom di tabel users
+                'csm_id' => $request->csm_id ?: null,
+                'csm_name' => $request->csm_name ?: null,
+                'tsn_metode' => $request->tsn_metode,
+                'tsn_total' => $request->tsn_total,
+                'tsn_paid' => $request->tsn_paid,
+                'tsn_type' => $request->tsn_type ?? 'normal',
+            ]);
+
+            // Simpan detail produk
+            foreach ($request->details as $detail) {
+                $transaction->details()->create([
+                    'tsnd_prd_id' => $detail['tsnd_prd_id'],
+                    'tsnd_qty' => $detail['tsnd_qty'],
                 ]);
             }
 
-            DB::commit();
-
-            $remaining = round($total - $transaction->tsn_paid, 2);
-            if ($remaining > 0) {
-                return response()->json([
-                    'message' => 'Pembayaran kurang, butuh konfirmasi kasir apakah buat hutang atau batalkan transaksi.',
-                    'requires_confirmation' => true,
-                    'remaining_amount' => $remaining,
-                    'transaction' => $transaction->load('details')
-                ], 202);
-            }
-
-            return response()->json([
-                'message' => 'Transaksi berhasil.',
-                'requires_confirmation' => false,
-                'transaction' => $transaction->load('details')
-            ], 201);
+            return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil disimpan');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->errors())->with('error', 'Validasi gagal: ' . $e->getMessage());
         } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['message' => 'Gagal membuat transaksi', 'error' => $e->getMessage()], 500);
+            Log::error('❌ Gagal menyimpan transaksi: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'input' => $request->all(),
+            ]);
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
-    // POST /api/transactions/{tsn}/confirm-debt
+
+
+    // ✅ Halaman edit transaksi (React)
+    public function edit($tsnId): Response
+    {
+        $transaction = Transaction::with(['details.product', 'customer', 'debt'])
+            ->findOrFail($tsnId);
+
+        return Inertia::render('Transactions/Edit', [
+            'transaction' => $transaction,
+            'customers' => Customer::all(['csm_id', 'csm_name']),
+            'products' => Product::all(['prd_id', 'prd_name', 'prd_price']),
+        ]);
+    }
+
+    // ✅ Konfirmasi hutang
     public function confirmDebt(Request $request, $tsnId)
     {
         $data = $request->validate([
@@ -105,7 +116,9 @@ class TransactionController extends Controller
         $remaining = $transaction->tsn_total - $transaction->tsn_paid;
 
         if ($remaining <= 0) {
-            return response()->json(['message' => 'Tidak ada sisa hutang.'], 400);
+            return redirect()->route('transactions.index')->with('flash', [
+                'error' => 'Tidak ada sisa hutang untuk transaksi ini.'
+            ]);
         }
 
         DB::beginTransaction();
@@ -119,37 +132,47 @@ class TransactionController extends Controller
                 'deb_status' => 'unpaid',
             ]);
 
-            // update transaksi agar terkait customer
             $transaction->update(['tsn_csm_id' => $data['deb_csm_id']]);
-
             DB::commit();
-            return response()->json(['message' => 'Debt berhasil dibuat.', 'debt' => $debt], 201);
+
+            return redirect()->route('transactions.index')->with('flash', [
+                'success' => 'Debt berhasil dibuat.',
+                'debt' => $debt
+            ]);
         } catch (\Throwable $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Gagal membuat debt', 'error' => $e->getMessage()], 500);
+            return redirect()->route('transactions.index')->with('flash', [
+                'error' => 'Gagal membuat debt: ' . $e->getMessage()
+            ]);
         }
     }
 
-
-    // DELETE /api/transactions/{tsn}  -> cancel
+    // ✅ Hapus transaksi
     public function destroy($tsnId)
     {
         $transaction = Transaction::findOrFail($tsnId);
 
-        // Only allow deleting if debt doesn't exist (safety)
         if ($transaction->debt()->exists()) {
-            return response()->json(['message' => 'Transaksi memiliki debt, tidak bisa dibatalkan.'], 422);
+            return redirect()->route('transactions.index')->with('flash', [
+                'error' => 'Transaksi memiliki debt, tidak bisa dihapus.'
+            ]);
         }
 
         $transaction->delete();
 
-        return response()->json(['message' => 'Transaksi dibatalkan dan dihapus.'], 200);
+        return redirect()->route('transactions.index')->with('flash', [
+            'success' => 'Transaksi berhasil dihapus.'
+        ]);
     }
 
-    // Optional endpoint to fetch single transaction
+    // ✅ Detail transaksi
     public function show($tsnId)
     {
-        $transaction = Transaction::with(['user', 'customer', 'details.product', 'debt'])->findOrFail($tsnId);
-        return response()->json($transaction);
+        $transaction = Transaction::with(['user', 'customer', 'details.product', 'debt'])
+            ->findOrFail($tsnId);
+
+        return Inertia::render('Transactions/Show', [
+            'transaction' => $transaction
+        ]);
     }
 }
