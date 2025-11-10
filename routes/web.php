@@ -8,6 +8,7 @@ use App\Http\Controllers\SupportController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DebtController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -51,4 +52,11 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/transactions/{tsn}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
 
     Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/debts', [DebtController::class, 'index'])->name('debts.index');
+    Route::get('/debts/{deb_id}', [DebtController::class, 'show'])->name('debts.show');
+    Route::get('/debts/{deb_id}/edit', [DebtController::class, 'edit'])->name('debts.edit');
+    Route::put('/debts/{deb_id}', [DebtController::class, 'update'])->name('debts.update');
 });
