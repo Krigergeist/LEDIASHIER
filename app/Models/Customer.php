@@ -7,7 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Customer extends Model
 {
     protected $primaryKey = 'csm_id';
-    protected $fillable = ['csm_nik', 'csm_name', 'csm_phone', 'csm_address'];
+    protected $fillable = [
+        'csm_name',
+        'csm_nik',
+        'csm_phone',
+        'csm_address',
+    ];
 
     public function transactions()
     {
