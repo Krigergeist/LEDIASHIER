@@ -58,11 +58,11 @@ export default function Index() {
                         <tr className="bg-gray-200">
                             {[
                                 ["tsn_id", "ID"],
-                                ["customer.csm_name", "Customer"],
+                                // ["customer.csm_name", "Customer"],
                                 ["tsn_date", "Date"],
                                 ["tsn_metode", "Method"],
                                 [null, "Products"],
-                                ["total_qty", "Qty"],
+                                // ["total_qty", "Qty"],
                                 ["tsn_total", "Total"],
                                 [null, "Actions"],
                             ].map(([col, title]) => (
@@ -81,7 +81,7 @@ export default function Index() {
                             transactions.data.map((tx) => (
                                 <tr key={tx.tsn_id}>
                                     <td className="p-2 border">{tx.tsn_id}</td>
-                                    <td className="p-2 border">{tx.customer?.csm_name ?? "-"}</td>
+                                    {/* <td className="p-2 border">{tx.customer?.csm_name ?? "-"}</td> */}
                                     <td className="p-2 border">{tx.tsn_date}</td>
                                     <td className="p-2 border">{tx.tsn_metode}</td>
                                     <td className="p-2 border">
@@ -93,7 +93,7 @@ export default function Index() {
                                             ))}
                                         </ul>
                                     </td>
-                                    <td className="p-2 border">{tx.total_qty}</td>
+                                    {/* <td className="p-2 border">{tx.total_qty}</td> */}
                                     <td className="p-2 border">
                                         Rp {parseInt(tx.tsn_total).toLocaleString("id-ID")}
                                     </td>
