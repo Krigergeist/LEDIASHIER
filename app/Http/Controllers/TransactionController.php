@@ -13,6 +13,7 @@ use App\Models\Product;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
+use Throwable;
 
 class TransactionController extends Controller
 {
@@ -21,7 +22,7 @@ class TransactionController extends Controller
     {
         $transactions = Transaction::with(['user', 'customer', 'details.product', 'debt'])
             ->latest()
-            ->paginate(20);
+            ->paginate(10);
 
         return Inertia::render('Transactions/Index', [
             'transactions' => $transactions,
@@ -52,24 +53,48 @@ class TransactionController extends Controller
                 'details.*.tsnd_qty' => 'required|integer|min:1',
             ]);
 
-            // Pastikan user login tersedia
             $user = auth()->user();
             if (!$user) {
-                throw new \Exception("User belum login, tidak bisa menyimpan transaksi.");
+                throw new \Exception("User belum login, tsn_usr_id tidak boleh null.");
             }
 
-            // Simpan transaksi utama
+            DB::beginTransaction();
+
+            // 🔹 Buat customer baru kalau hanya isi nama (dan tidak pilih dari daftar)
+            $customerId = null;
+            if ($request->csm_id) {
+                $customerId = $request->csm_id;
+            } elseif ($request->csm_name) {
+                // Simpan customer baru kalau belum ada
+                $customer = Customer::create([
+                    'csm_name'    => $request->input('csm_name'),
+                    'csm_nik'     => $request->input('csm_nik'),
+                    'csm_phone'   => $request->input('csm_phone'),
+                    'csm_address' => $request->input('csm_address'),
+                ]);
+
+                $customerId = $customer->csm_id;
+            }
+
+            // 🔹 Hitung kembalian (kalau overpaid)
+            $paidReturn = 0;
+            if ($request->tsn_paid > $request->tsn_total) {
+                $paidReturn = $request->tsn_paid - $request->tsn_total;
+            }
+
+            // 🔹 Simpan transaksi
             $transaction = Transaction::create([
-                'tsn_usr_id' => $user->usr_id ?? $user->id, // sesuaikan kolom di tabel users
-                'csm_id' => $request->csm_id ?: null,
-                'csm_name' => $request->csm_name ?: null,
+                'tsn_usr_id' => $user->usr_id ?? $user->id,
+                'csm_id' => $customerId,
+                'csm_name' => $request->csm_name,
                 'tsn_metode' => $request->tsn_metode,
                 'tsn_total' => $request->tsn_total,
                 'tsn_paid' => $request->tsn_paid,
+                'tsn_paid_return' => $paidReturn,
                 'tsn_type' => $request->tsn_type ?? 'normal',
             ]);
 
-            // Simpan detail produk
+            // 🔹 Simpan detail produk
             foreach ($request->details as $detail) {
                 $transaction->details()->create([
                     'tsnd_prd_id' => $detail['tsnd_prd_id'],
@@ -77,17 +102,38 @@ class TransactionController extends Controller
                 ]);
             }
 
+            // 🔹 Kalau transaksi hutang (uang kurang)
+            if ($request->tsn_type === 'hutang') {
+                $remaining = $request->remaining ?? ($request->tsn_total - $request->tsn_paid);
+
+                Debt::create([
+                    'deb_tsn_id' => $transaction->tsn_id,
+                    'deb_csm_id' => $customerId,
+                    'deb_amount' => $remaining,
+                    'deb_paid_amount' => 0,
+                    'deb_due_date' => $request->deb_due_date ?? now()->addDays(30),
+                    'deb_status' => 'unpaid',
+                ]);
+            }
+
+            DB::commit();
+
             return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil disimpan');
         } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack();
             return back()->withErrors($e->errors())->with('error', 'Validasi gagal: ' . $e->getMessage());
-        } catch (\Exception $e) {
-            Log::error('❌ Gagal menyimpan transaksi: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('❌ Gagal menyimpan transaksi', [
+                'message' => $e->getMessage(),
                 'input' => $request->all(),
+                'trace' => $e->getTraceAsString(),
             ]);
-            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menyimpan transaksi: ' . $e->getMessage());
         }
     }
+
+
 
 
 
@@ -139,7 +185,7 @@ class TransactionController extends Controller
                 'success' => 'Debt berhasil dibuat.',
                 'debt' => $debt
             ]);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
             return redirect()->route('transactions.index')->with('flash', [
                 'error' => 'Gagal membuat debt: ' . $e->getMessage()
