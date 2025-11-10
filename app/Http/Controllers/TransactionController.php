@@ -122,7 +122,7 @@ class TransactionController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollBack();
             return back()->withErrors($e->errors())->with('error', 'Validasi gagal: ' . $e->getMessage());
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
             Log::error('❌ Gagal menyimpan transaksi', [
                 'message' => $e->getMessage(),
