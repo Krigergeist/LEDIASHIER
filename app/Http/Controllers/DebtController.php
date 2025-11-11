@@ -13,14 +13,25 @@ use Illuminate\Support\Facades\Log;
 class DebtController extends Controller
 {
     // 📋 Halaman utama daftar hutang
-    public function index(): Response
+    public function index(Request $request)
     {
-        $debts = Debt::with('customer', 'transaction')
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        $query = Debt::with('customer');
 
-        return Inertia::render('Debts/Index', [
+        if ($request->search) {
+            $query->whereHas('customer', function ($q) use ($request) {
+                $q->where('csm_name', 'like', "%{$request->search}%");
+            })
+                ->orWhere('deb_amount', 'like', "%{$request->search}%")
+                ->orWhere('deb_status', 'like', "%{$request->search}%");
+        }
+
+        $debts = $query->orderBy('deb_id', 'desc')->paginate(10);
+
+        return inertia('Debts/Index', [
             'debts' => $debts,
+            'auth' => [
+                'user' => $request->user(),
+            ],
         ]);
     }
 
@@ -49,10 +60,8 @@ class DebtController extends Controller
     {
         try {
             $validated = $request->validate([
-                'deb_amount' => 'required|numeric|min:0',
-                'deb_paid_amount' => 'required|numeric|min:0',
+                'bayar' => 'nullable|numeric|min:0',
                 'deb_due_date' => 'required|date',
-                'deb_status' => 'required|string|in:unpaid,paid,partial',
                 'csm_name' => 'required|string|max:100',
                 'csm_phone' => 'nullable|string|max:50',
                 'csm_address' => 'nullable|string|max:255',
@@ -61,13 +70,33 @@ class DebtController extends Controller
             DB::beginTransaction();
 
             $debt = Debt::findOrFail($deb_id);
+
+            $totalHutang = $debt->deb_amount;
+            $sudahBayar = $debt->deb_paid_amount;
+            $bayarBaru = $request->bayar ?? 0;
+            $totalDibayar = $sudahBayar + $bayarBaru;
+
+            // Jika lebih bayar
+            if ($totalDibayar > $totalHutang) {
+                return back()->with('error', 'Nominal pembayaran melebihi total hutang!');
+            }
+
+            // Tentukan status otomatis
+            $status = 'unpaid';
+            if ($totalDibayar == $totalHutang) {
+                $status = 'paid';
+            } elseif ($totalDibayar > 0 && $totalDibayar < $totalHutang) {
+                $status = 'partial';
+            }
+
+            // Update data hutang
             $debt->update([
-                'deb_amount' => $validated['deb_amount'],
-                'deb_paid_amount' => $validated['deb_paid_amount'],
-                'deb_due_date' => $validated['deb_due_date'],
-                'deb_status' => $validated['deb_status'],
+                'deb_paid_amount' => $totalDibayar,
+                'deb_status' => $status,
+                'deb_due_date' => $validated['deb_due_date'], // tanggal baru selalu tersimpan
             ]);
 
+            // Update data customer
             $debt->customer->update([
                 'csm_name' => $validated['csm_name'],
                 'csm_phone' => $validated['csm_phone'],
