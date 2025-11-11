@@ -18,17 +18,44 @@ use Throwable;
 class TransactionController extends Controller
 {
     // ✅ Halaman daftar transaksi
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $transactions = Transaction::with(['user', 'customer', 'details.product', 'debt'])
-            ->latest()
-            ->paginate(10);
+        $query = Transaction::with(['user', 'customer', 'details.product', 'debt'])
+            ->latest();
+
+        if ($request->search) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('tsn_id', 'like', "%{$search}%")
+                    ->orWhere('tsn_metode', 'like', "%{$search}%")
+                    ->orWhere('tsn_total', 'like', "%{$search}%")
+                    ->orWhere('tsn_paid', 'like', "%{$search}%")
+                    ->orWhere('tsn_type', 'like', "%{$search}%")
+                    ->orWhereHas('customer', function ($qc) use ($search) {
+                        $qc->where('csm_name', 'like', "%{$search}%")
+                            ->orWhere('csm_phone', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('user', function ($qu) use ($search) {
+                        $qu->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('details.product', function ($qp) use ($search) {
+                        $qp->where('prd_name', 'like', "%{$search}%")
+                            ->orWhere('prd_code', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $transactions = $query->paginate(10);
 
         return Inertia::render('Transactions/Index', [
             'transactions' => $transactions,
             'customers' => Customer::all(['csm_id', 'csm_name']),
             'products' => Product::all(['prd_id', 'prd_name', 'prd_price']),
             'flash' => session('flash') ?? null,
+            'auth' => [
+                'user' => $request->user(),
+            ],
         ]);
     }
 
