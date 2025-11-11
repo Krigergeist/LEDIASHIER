@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from "react";
-import { router, usePage } from "@inertiajs/react";
+import { router, usePage, Head } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
 export default function Create() {
-    const { products } = usePage().props;
+    const { products, auth } = usePage().props;
 
     const [form, setForm] = useState({
         csm_name: "",
@@ -76,9 +76,13 @@ export default function Create() {
     };
 
     return (
-        <AuthenticatedLayout>
+        <AuthenticatedLayout
+            user={auth.user}
+            header={<p className="flex flex-auto font-semibold w-max text-xl text-gray-800 leading-tight">Buat Transaksi</p>}
+        >
+            <Head title="Transactions" />
             <div className="bg-white p-6 rounded shadow">
-                <h1 className="text-xl font-bold mb-4">Tambah Transaksi</h1>
+                <h1 className="text-xl font-bold mb-4">Buat Transaksi</h1>
 
                 <form onSubmit={handleSubmit}>
                     {/* METODE */}
@@ -89,7 +93,7 @@ export default function Create() {
                             onChange={(e) =>
                                 setForm({ ...form, tsn_metode: e.target.value })
                             }
-                            className="border rounded p-2 w-full"
+                            className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 focus:ring-0 border-none"
                         >
                             <option value="cash">Cash</option>
                             <option value="credit">Credit</option>
@@ -108,7 +112,7 @@ export default function Create() {
                                     newDetails[i].tsnd_prd_id = e.target.value;
                                     setForm({ ...form, details: newDetails });
                                 }}
-                                className="border rounded p-2 flex-1"
+                                className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 mb-2 focus:ring-0 border-none"
                                 required
                             >
                                 <option value="">Pilih Produk</option>
@@ -128,7 +132,7 @@ export default function Create() {
                                     newDetails[i].tsnd_qty = parseInt(e.target.value);
                                     setForm({ ...form, details: newDetails });
                                 }}
-                                className="w-24 border rounded p-2"
+                                className="w-24 rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 mb-2 focus:ring-0 border-none"
                             />
 
                             {form.details.length > 1 && (
@@ -160,7 +164,7 @@ export default function Create() {
                             <label className="font-semibold">Bayar:</label>
                             <input
                                 type="number"
-                                className="w-32 border rounded p-2 text-right"
+                                className="w-32 rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 focus:ring-0 border-none"
                                 value={form.tsn_paid || ""}
                                 onChange={(e) =>
                                     setForm({
@@ -200,7 +204,7 @@ export default function Create() {
                                 placeholder="Nama Customer *"
                                 value={form.csm_name}
                                 onChange={(e) => setForm({ ...form, csm_name: e.target.value })}
-                                className="border p-2 rounded col-span-2"
+                                className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 mb-2 focus:ring-0 border-none col-span-2"
                                 required
                             />
                             <input
@@ -208,27 +212,27 @@ export default function Create() {
                                 placeholder="NIK"
                                 value={form.csm_nik}
                                 onChange={(e) => setForm({ ...form, csm_nik: e.target.value })}
-                                className="border p-2 rounded"
+                                className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 mb-2 focus:ring-0 border-none"
                             />
                             <input
                                 type="text"
                                 placeholder="Nomor Telepon"
                                 value={form.csm_phone}
                                 onChange={(e) => setForm({ ...form, csm_phone: e.target.value })}
-                                className="border p-2 rounded"
+                                className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 mb-2 focus:ring-0 border-none"
                             />
                             <textarea
                                 placeholder="Alamat"
                                 value={form.csm_address}
                                 onChange={(e) => setForm({ ...form, csm_address: e.target.value })}
-                                className="border p-2 rounded col-span-2"
+                                className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 mb-2 focus:ring-0 border-none col-span-2"
                             />
                             <input
                                 type="date"
                                 placeholder="Jatuh Tempo Hutang"
                                 value={form.deb_due_date}
                                 onChange={(e) => setForm({ ...form, deb_due_date: e.target.value })}
-                                className="border p-2 rounded col-span-2"
+                                className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 mb-2 focus:ring-0 border-none col-span-2"
                             />
                         </div>
 
