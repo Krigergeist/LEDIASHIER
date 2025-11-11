@@ -14,6 +14,10 @@ class Product extends Model
 
     protected $primaryKey = 'prd_id';
 
+    public $incrementing = true;
+
+    protected $keyType = 'int';
+
     protected $fillable = [
         'prd_code',
         'prd_name',
