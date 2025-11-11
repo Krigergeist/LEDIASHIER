@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Validation\Rule;
 
 
 
@@ -22,12 +23,18 @@ class ProductController extends Controller
         $query = Product::query();
 
         if ($request->search) {
-            $query->where('prd_name', 'like', "%{$request->search}%")
-                ->orWhere('prd_code', 'like', "%{$request->search}%")
-                ->orWhere('prd_description', 'like', "%{$request->search}%");
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('prd_name', 'like', "%{$search}%")
+                    ->orWhere('prd_code', 'like', "%{$search}%")
+                    ->orWhere('prd_description', 'like', "%{$search}%")
+                    ->orWhere('prd_price', 'like', "%{$search}%")
+                    ->orWhere('prd_stock', 'like', "%{$search}%")
+                    ->orWhere('created_at', 'like', "%{$search}%")
+                    ->orWhere('updated_at', 'like', "%{$search}%");
+            });
         }
 
-        // Ambil hanya 10 item per halaman
         $products = $query->orderBy('prd_id', 'desc')->paginate(12);
 
         return inertia('Products/Index', [
@@ -35,6 +42,21 @@ class ProductController extends Controller
             'auth' => [
                 'user' => $request->user(),
             ],
+        ]);
+    }
+
+    public function create(Request $request)
+    {
+        return Inertia::render('Products/Create', [
+            'auth' => ['user' => $request->user()],
+        ]);
+    }
+
+    public function edit(Product $product, Request $request)
+    {
+        return Inertia::render('Products/Edit', [
+            'product' => $product,
+            'auth' => ['user' => $request->user()],
         ]);
     }
 
@@ -81,7 +103,10 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $data = $request->validate([
-            'prd_code' => "required|unique:products,prd_code,{$product->id}",
+            'prd_code' => [
+                'required',
+                Rule::unique('products', 'prd_code')->ignore($product->prd_id, 'prd_id'),
+            ],
             'prd_name' => 'required|string',
             'prd_price' => 'nullable|numeric',
             'prd_stock' => 'nullable|integer',
@@ -98,13 +123,14 @@ class ProductController extends Controller
             $image = $request->file('prd_img');
             $filename = time() . '.jpg';
 
-            $manager = new ImageManager('gd');
+            $manager = new ImageManager(new Driver()); // ✅ benar
             $img = $manager->read($image)
                 ->scale(width: 800)
                 ->encodeByExtension('jpg', quality: 75);
 
+
             Storage::put('public/products/' . $filename, (string) $img);
-            $validated['prd_img'] = 'products/' . $filename;
+            $data['prd_img'] = 'products/' . $filename;
         }
 
 
