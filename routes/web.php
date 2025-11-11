@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DebtController;
+use App\Http\Controllers\ReportController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -40,7 +41,9 @@ Route::middleware('auth')->group(function () {
 require __DIR__ . '/auth.php';
 
 Route::middleware(['auth'])->group(function () {
-    Route::resource('products', ProductController::class);
+    Route::resource('products', ProductController::class)->except(['show']);
+    Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+    Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -59,4 +62,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/debts/{deb_id}', [DebtController::class, 'show'])->name('debts.show');
     Route::get('/debts/{deb_id}/edit', [DebtController::class, 'edit'])->name('debts.edit');
     Route::put('/debts/{deb_id}', [DebtController::class, 'update'])->name('debts.update');
+});
+Route::middleware(['auth'])->group(function () {
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/export', [ReportController::class, 'exportPdf'])->name('reports.export');
 });
