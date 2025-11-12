@@ -89,24 +89,38 @@ export default function Authenticated({ user, header, children }) {
                             </ListItem>
                         </Link>
                     </div>
+                    <div className='flex flex-col'>
+                        <Link
+                            href={route('support')} as="button"
+                            className="hover:bg-sky-400 rounded-xl hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]"
+                        >
+                            <ListItem className="hover:bg-sky-400 transition hover:">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-7 me-4 text-white font-bold">
+                                    <path fillRule="evenodd" d="M4.804 21.644A6.707 6.707 0 0 0 6 21.75a6.721 6.721 0 0 0 3.583-1.029c.774.182 1.584.279 2.417.279 5.322 0 9.75-3.97 9.75-9 0-5.03-4.428-9-9.75-9s-9.75 3.97-9.75 9c0 2.409 1.025 4.587 2.674 6.192.232.226.277.428.254.543a3.73 3.73 0 0 1-.814 1.686.75.75 0 0 0 .44 1.223ZM8.25 10.875a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25ZM10.875 12a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Zm4.875-1.125a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25Z" clipRule="evenodd" />
+                                </svg>
+                                <p className="text-2xl text-white font-medium">Bantuan</p>
+                            </ListItem>
+                        </Link>
+                        <Link
+                            method="post"
+                            href={route('logout')}
+                            as="button"
+                            className="hover:bg-sky-400 rounded-xl hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]"
+                        >
+                            <ListItem className="hover:bg-sky-400 transition hover:">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-7 me-4 text-white font-bold">
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M16.5 3.75a1.5 1.5 0 0 1 1.5 1.5v13.5a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 0 0 1-1.5-1.5V15a.75.75 0 0 0-1.5 0v3.75a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V5.25a3 3 0 0 0-3-3h-6a3 3 0 0 0-3 3V9A.75.75 0 1 0 9 9V5.25a1.5 1.5 0 0 1 1.5-1.5h6ZM5.78 8.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 0 0 0 1.06l3 3a.75.75 0 0 0 1.06-1.06l-1.72-1.72H15a.75.75 0 0 0 0-1.5H4.06l1.72-1.72a.75.75 0 0 0 0-1.06Z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                                <p className="text-2xl text-white font-medium">Log Out</p>
+                            </ListItem>
+                        </Link>
+                    </div>
 
-                    <Link
-                        method="post"
-                        href={route('logout')}
-                        as="button"
-                        className="hover:bg-sky-400 rounded-xl hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]"
-                    >
-                        <ListItem className="hover:bg-sky-400 transition hover:">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-7 text-white font-bold">
-                                <path
-                                    fillRule="evenodd"
-                                    d="M16.5 3.75a1.5 1.5 0 0 1 1.5 1.5v13.5a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 0 0 1-1.5-1.5V15a.75.75 0 0 0-1.5 0v3.75a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V5.25a3 3 0 0 0-3-3h-6a3 3 0 0 0-3 3V9A.75.75 0 1 0 9 9V5.25a1.5 1.5 0 0 1 1.5-1.5h6ZM5.78 8.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 0 0 0 1.06l3 3a.75.75 0 0 0 1.06-1.06l-1.72-1.72H15a.75.75 0 0 0 0-1.5H4.06l1.72-1.72a.75.75 0 0 0 0-1.06Z"
-                                    clipRule="evenodd"
-                                />
-                            </svg>
-                            <p className="text-2xl text-white font-medium">Log Out</p>
-                        </ListItem>
-                    </Link>
+
                 </List>
             </div>
 
