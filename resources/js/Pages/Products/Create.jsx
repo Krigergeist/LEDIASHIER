@@ -18,6 +18,14 @@ export default function Create() {
         router.post(route("products.store"), form);
     };
 
+    const handleBack = () => {
+        if (auth) {
+            window.history.back();
+        } else {
+            window.location.href = route('welcome');
+        }
+    };
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -90,12 +98,22 @@ export default function Create() {
                             />
                         </div>
 
-                        <button
-                            type="submit"
-                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-                        >
-                            Simpan Produk
-                        </button>
+                        <div className="mt-6">
+                            <button
+                                onClick={handleBack}
+                                className="bg-sky-500 text-white px-4 py-2 rounded hover:bg-sky-600 transition me-4 mt-6"
+                            >
+                                Kembali
+                            </button>
+
+                            <button
+                                type="submit"
+                                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                            >
+                                Simpan Produk
+                            </button>
+                        </div>
+
                     </form>
                 </div>
             </div>
