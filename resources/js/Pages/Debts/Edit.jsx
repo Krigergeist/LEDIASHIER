@@ -39,6 +39,14 @@ export default function Edit() {
         router.put(`/debts/${debt.deb_id}`, form);
     };
 
+    const handleBack = () => {
+        if (auth) {
+            window.history.back();
+        } else {
+            window.location.href = route('welcome');
+        }
+    };
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -142,12 +150,21 @@ export default function Edit() {
                             />
                         </div>
 
-                        <button
-                            type="submit"
-                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                        >
-                            Simpan Perubahan
-                        </button>
+                        <div className="">
+                            <button
+                                onClick={handleBack}
+                                className="bg-sky-500 text-white px-4 py-2 rounded hover:bg-sky-600 transition me-4 mt-6"
+                            >
+                                Kembali
+                            </button>
+
+                            <button
+                                type="submit"
+                                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                            >
+                                Simpan Perubahan
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
