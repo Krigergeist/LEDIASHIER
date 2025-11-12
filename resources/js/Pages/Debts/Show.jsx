@@ -5,6 +5,14 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 export default function Show() {
     const { debt, auth } = usePage().props;
 
+    const handleBack = () => {
+        if (auth) {
+            window.history.back();
+        } else {
+            window.location.href = route('welcome');
+        }
+    };
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -24,14 +32,23 @@ export default function Show() {
                         <p><b>Status:</b> {debt.deb_status}</p>
                     </div>
 
-                    <div className="mt-6">
+                    <div className="flex">
+                        <button
+                            onClick={handleBack}
+                            className="bg-sky-500 text-white px-4 py-2 rounded hover:bg-sky-600 transition me-4 mt-6"
+                        >
+                            Kembali
+                        </button>
+
+
                         <Link
                             href={`/debts/${debt.deb_id}/edit`}
-                            className="bg-green-600 text-white px-4 py-2 rounded"
+                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition mt-6"
                         >
                             Edit Data
                         </Link>
                     </div>
+
                 </div>
             </div>
         </AuthenticatedLayout>
