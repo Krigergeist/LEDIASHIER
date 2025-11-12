@@ -14,6 +14,12 @@ class User extends Authenticatable
 
     protected $table = 'users';
     protected $primaryKey = 'usr_id';
+
+    public function getRememberTokenName()
+    {
+        return 'usr_remembered_token';
+    }
+
     public $timestamps = false;
 
     protected $fillable = [
