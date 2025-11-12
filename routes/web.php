@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TransactionController;
@@ -20,6 +21,10 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
 
 Route::get('/support', function () {
     return Inertia::render('Support');
@@ -28,9 +33,6 @@ Route::get('/support', function () {
 Route::post('/support/send', [SupportController::class, 'send'])->name('support.send');
 
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -44,6 +46,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('products', ProductController::class)->except(['show']);
     Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
     Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 });
 
 Route::middleware(['auth'])->group(function () {
