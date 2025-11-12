@@ -164,24 +164,34 @@ export default function Create() {
                             <label className="font-semibold">Bayar:</label>
                             <input
                                 type="number"
-                                className="w-32 rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 focus:ring-0 border-none"
+                                max="9999999999999"
+                                className="w-32 rounded-lg bg-[#E8F0FE] ..."
                                 value={form.tsn_paid || ""}
                                 onChange={(e) =>
                                     setForm({
                                         ...form,
-                                        tsn_paid: parseFloat(e.target.value) || 0,
+                                        tsn_paid: Math.min(parseFloat(e.target.value) || 0, 9999999999999),
                                     })
                                 }
                             />
                         </div>
                     </div>
 
-                    <button
-                        type="submit"
-                        className="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-                    >
-                        Simpan
-                    </button>
+                    <div>
+                        <button
+                            onClick={handleBack}
+                            className="bg-sky-500 text-white px-4 py-2 rounded hover:bg-sky-600 transition me-4 mt-6"
+                        >
+                            Kembali
+                        </button>
+
+                        <button
+                            type="submit"
+                            className="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                        >
+                            Simpan
+                        </button>
+                    </div>
 
                     {errorMessage && (
                         <div className="mt-3 p-3 bg-red-100 text-red-700 rounded">
