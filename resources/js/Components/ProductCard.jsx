@@ -4,10 +4,11 @@ import { router } from "@inertiajs/react";
 export default function ProductCard({ product }) {
     const [showDesc, setShowDesc] = useState(false);
 
-    function handleDelete() {
-        if (!confirm("Hapus produk ini?")) return;
-        router.delete(route("products.destroy", { product: product.id }));
-    }
+    const handleDelete = () => {
+        if (confirm("Yakin ingin menghapus produk ini?")) {
+            router.delete(route("products.destroy", { product: product.prd_id }));
+        }
+    };
 
     function handleEdit() {
         router.get(route("products.edit", { product: product.prd_id }));
