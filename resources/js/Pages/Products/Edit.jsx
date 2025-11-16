@@ -14,6 +14,13 @@ export default function Edit() {
         prd_img: null,
     });
 
+    const [preview, setPreview] = useState(
+        product.prd_img ? `/storage/${product.prd_img}` : null
+    );
+
+
+
+
     const handleSubmit = (e) => {
         e.preventDefault();
         router.post(route("products.update", product.prd_id), {
@@ -93,14 +100,50 @@ export default function Edit() {
                         </div>
 
                         <div>
-                            <label className="block font-semibold">Gambar Produk</label>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) => setForm({ ...form, prd_img: e.target.files[0] })}
-                                className="w-full bg-[#E8F0FE] p-3 rounded-lg border-none shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)]"
-                            />
+                            <label className="block font-semibold mb-2">Gambar Produk</label>
+
+                            <div
+                                className="w-48 h-48 bg-[#E8F0FE] rounded-xl shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] 
+        relative flex items-center justify-center overflow-hidden"
+                                style={{
+                                    backgroundImage: preview ? `url('${preview}')` : "none",
+                                    backgroundSize: "cover",
+                                    backgroundPosition: "center",
+                                }}
+                            >
+                                <div className="absolute inset-0 bg-black/10 shadow-[inset_0_8px_20px_rgba(0,0,0,0.25)]"></div>
+
+                                {!preview && (
+                                    <span className="absolute inset-0 flex items-center justify-center 
+                             text-gray-600 font-medium z-10">
+                                        Belum ada gambar
+                                    </span>
+                                )}
+
+                                <label
+                                    htmlFor="prd_img"
+                                    className="absolute z-20 cursor-pointer bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-semibold shadow-md hover:bg-white hover:scale-105 transition"
+                                >
+                                    Pilih Gambar
+                                </label>
+
+                                <input
+                                    id="prd_img"
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+                                        setForm({ ...form, prd_img: file });
+
+                                        if (file) {
+                                            setPreview(URL.createObjectURL(file));
+                                        }
+                                    }}
+                                />
+                            </div>
                         </div>
+
 
                         <div className="mt-4">
                             <button
