@@ -53,6 +53,14 @@ export default function Create() {
         }
     };
 
+    const handleBack = () => {
+        if (auth) {
+            window.history.back();
+        } else {
+            window.location.href = route('welcome');
+        }
+    };
+
     const handleSave = (type = "normal", remaining = 0) => {
         setErrorMessage("");
         router.post(
