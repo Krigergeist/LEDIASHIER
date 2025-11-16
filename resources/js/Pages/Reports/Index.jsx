@@ -120,7 +120,7 @@ export default function Index() {
                 {/* Aktivitas Produk dan Hutang */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="p-4 border rounded-lg shadow-sm bg-white">
-                        <h3 className="font-semibold mb-2">Produk Ditambahkan</h3>
+                        <h3 className="font-semibold mb-2">Penambahan Produk</h3>
                         <ul className="text-sm space-y-1">
                             {produkDitambah.map((p) => (
                                 <li key={p.prd_name}>✅ {p.prd_name}</li>
@@ -129,7 +129,7 @@ export default function Index() {
                     </div>
 
                     <div className="p-4 border rounded-lg shadow-sm bg-white">
-                        <h3 className="font-semibold mb-2">Produk Dihapus</h3>
+                        <h3 className="font-semibold mb-2">Penghapusan Produk</h3>
                         <ul className="text-sm space-y-1">
                             {produkDihapus.map((p) => (
                                 <li key={p.prd_name}>❌ {p.prd_name}</li>
@@ -138,7 +138,7 @@ export default function Index() {
                     </div>
 
                     <div className="p-4 border rounded-lg shadow-sm bg-white">
-                        <h3 className="font-semibold mb-2">Hutang Diubah</h3>
+                        <h3 className="font-semibold mb-2">Perubahan Produk</h3>
                         <ul className="text-sm space-y-1">
                             {hutangPerubahan.map((h) => (
                                 <li key={h.deb_id}>
