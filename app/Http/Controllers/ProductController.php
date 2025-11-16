@@ -114,31 +114,33 @@ class ProductController extends Controller
             'prd_img' => 'nullable|image|max:2048',
         ]);
 
+        // ❗ Jika tidak upload gambar → pertahankan gambar lama
+        if (!$request->hasFile('prd_img')) {
+            $data['prd_img'] = $product->prd_img;
+        }
 
+        // Jika upload gambar baru
         if ($request->hasFile('prd_img')) {
-            if ($product->prd_img && Storage::exists('public/' . $product->prd_img)) {
-                Storage::delete('public/' . $product->prd_img);
+
+            // Hapus gambar lama
+            if ($product->prd_img && Storage::exists("public/" . $product->prd_img)) {
+                Storage::delete("public/" . $product->prd_img);
             }
 
             $image = $request->file('prd_img');
             $filename = time() . '.jpg';
 
-            $manager = new ImageManager(new Driver()); // ✅ benar
+            $manager = new ImageManager(new Driver());
             $img = $manager->read($image)
                 ->scale(width: 800)
                 ->encodeByExtension('jpg', quality: 75);
 
+            Storage::put("public/products/" . $filename, (string) $img);
 
-            Storage::put('public/products/' . $filename, (string) $img);
-            $data['prd_img'] = 'products/' . $filename;
+            $data['prd_img'] = "products/" . $filename;
         }
 
-
-
         $product->update($data);
-
-
-
 
         return Redirect::route('products.index')->with('success', 'Produk berhasil diupdate');
     }
