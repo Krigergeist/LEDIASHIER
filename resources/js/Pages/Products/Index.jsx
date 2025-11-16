@@ -16,29 +16,33 @@ export default function Index() {
         <AuthenticatedLayout
             user={auth.user}
             header={
-                <p className="flex flex-auto font-semibold w-max text-xl text-gray-800 leading-tight">
+                <p className="text-xl font-semibold text-gray-800">
                     Produk
                 </p>
             }
         >
             <Head title="Produk" />
 
-            <div className="p-6 flex flex-col">
-                <div className="flex flex-col p-[20px] bg-white rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.12)]">
-                    {/* Header dan tombol tambah */}
-                    <div className="flex flex-row items-center justify-between mb-4">
-                        <h1 className="text-xl font-bold">Daftar Produk</h1>
+            <div className="p-6">
+                <div className="bg-white rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.12)] p-6 space-y-6">
+
+                    {/* Header & Tambah Produk */}
+                    <div className="flex items-center justify-between">
+                        <h1 className="text-xl font-bold text-gray-700">Daftar Produk</h1>
 
                         <Link
                             href={route("products.create")}
-                            className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded"
+                            className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition"
                         >
                             Tambah Produk
                         </Link>
                     </div>
 
-                    {/* Pencarian */}
-                    <form onSubmit={handleSearch} className="flex w-1/2 mb-4">
+                    {/* Search Bar */}
+                    <form
+                        onSubmit={handleSearch}
+                        className="flex w-full sm:w-1/2"
+                    >
                         <input
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
@@ -47,46 +51,47 @@ export default function Index() {
                         />
                         <button
                             type="submit"
-                            className="bg-green-500 text-white px-4 rounded-r-md hover:bg-green-600"
+                            className="bg-green-500 hover:bg-green-600 text-white px-4 rounded-r-lg shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition"
                         >
                             Cari
                         </button>
                     </form>
 
-                    <div className="bg-[#d9d9d9] h-[5px] w-full mb-6 rounded-md"></div>
+                    <div className='bg-[#d9d9d9] h-[5px] w-full mb-6 rounded-md'></div>
 
-                    {/* Grid Produk */}
+                    {/* Produk Grid */}
                     <div
                         className="grid gap-5"
                         style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}
                     >
                         {products.data.length === 0 && (
-                            <div className="p-6 bg-white rounded shadow text-gray-600">
-                                Tidak ada produk.
+                            <div className="col-span-full text-center text-gray-500 py-6">
+                                Tidak ada produk yang ditemukan.
                             </div>
                         )}
 
-                        {products.data.map((p) => (
-                            <ProductCard
-                                key={p.prd_id}
-                                product={p}
-                            />
+                        {products.data.map((p, idx) => (
+                            <ProductCard key={p.prd_id} product={p} index={idx} />
                         ))}
-
                     </div>
 
                     {/* Pagination */}
-                    <nav className="flex flex-row gap-2 mt-5 bg-white w-fit rounded-md">
+                    <nav className="flex flex-wrap gap-1 mt-4">
                         {products.links.map((link, i) => (
                             <a
                                 key={i}
-                                href={link.url}
+                                href={link.url || "#"}
                                 dangerouslySetInnerHTML={{ __html: link.label }}
-                                className={`px-3 py-1 rounded shadow-[0_4px_12px_rgba(0,0,0,0.12)] ${link.active ? "bg-sky-500 text-white" : ""
-                                    }`}
+                                className={`px-3 py-1 rounded-lg text-sm shadow-[0_4px_12px_rgba(0,0,0,0.12)] border 
+                                    ${link.active
+                                        ? "bg-sky-500 text-white border-sky-500"
+                                        : "bg-white text-gray-700 hover:bg-gray-100"
+                                    }
+                                `}
                             />
                         ))}
                     </nav>
+
                 </div>
             </div>
         </AuthenticatedLayout>
