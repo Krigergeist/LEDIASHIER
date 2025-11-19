@@ -21,14 +21,18 @@ export default function Authenticated({ user, header, children }) {
         <div className="flex w-full bg-gray-100 overflow-x-hidden">
             <div className="fixed top-0 left-0 h-screen min-w-[20rem] bg-sky-500 shadow-[4px_0px_12px_rgba(0,0,0,0.12)] rounded-r-xl flex flex-col justify-between">
                 <Link href={"/"}>
-                    <div className="mb-2 p-[34px] hover:bg-sky-400 transition border-b-[3px] border-white rounded-tr-xl">
-                        <Typography variant="h5" color="blue-gray">
+                    <div className="mb-2 p-[34px] hover:bg-sky-400 transition border-b-[3px] border-white rounded-tr-xl flex items-center gap-3">
+                        {/* Gambar Logo */}
+                        <img src="/storage/images/logo-white.png" alt="Logo" className="w-full h-[200px] object-contain" />
+
+                        {/* <Typography variant="h5" color="blue-gray">
                             <div className="bg-white inline-block text-transparent bg-clip-text font-bold text-4xl font-sans">
                                 Lediashier
                             </div>
-                        </Typography>
+                        </Typography> */}
                     </div>
                 </Link>
+
 
                 <List className="flex flex-col justify-between h-full p-[40px]">
                     <div className="flex flex-col">
