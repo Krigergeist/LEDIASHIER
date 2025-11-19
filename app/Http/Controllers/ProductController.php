@@ -26,7 +26,6 @@ class ProductController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('prd_name', 'like', "%{$search}%")
-                    ->orWhere('prd_code', 'like', "%{$search}%")
                     ->orWhere('prd_description', 'like', "%{$search}%")
                     ->orWhere('prd_price', 'like', "%{$search}%")
                     ->orWhere('prd_stock', 'like', "%{$search}%")
@@ -65,7 +64,6 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'prd_name' => 'required|string|max:255',
-            'prd_code' => 'required|string|max:255|unique:products,prd_code',
             'prd_price' => 'required|numeric',
             'prd_stock' => 'required|integer',
             'prd_description' => 'nullable|string',
@@ -103,10 +101,7 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $data = $request->validate([
-            'prd_code' => [
-                'required',
-                Rule::unique('products', 'prd_code')->ignore($product->prd_id, 'prd_id'),
-            ],
+
             'prd_name' => 'required|string',
             'prd_price' => 'nullable|numeric',
             'prd_stock' => 'nullable|integer',
