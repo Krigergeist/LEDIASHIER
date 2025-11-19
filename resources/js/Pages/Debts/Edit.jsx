@@ -4,6 +4,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
 export default function Edit() {
     const { debt, auth, flash } = usePage().props;
+
     const [form, setForm] = useState({
         csm_name: debt.customer?.csm_name || "",
         csm_phone: debt.customer?.csm_phone || "",
@@ -15,22 +16,28 @@ export default function Edit() {
         deb_status: debt.deb_status,
     });
 
-    // otomatis hitung status berdasarkan input bayar
-    useEffect(() => {
-        const total = parseFloat(form.deb_amount);
-        const sudah = parseFloat(form.deb_paid_amount);
-        const bayar = parseFloat(form.bayar || 0);
-        const totalDibayar = sudah + bayar;
+    // Hitung sisa hutang untuk ditampilkan
+    const total = parseFloat(form.deb_amount);
+    const sudah = parseFloat(form.deb_paid_amount);
+    const bayar = parseFloat(form.bayar || 0);
 
+    const totalDibayar = sudah + bayar;
+    const sisa = total - totalDibayar;
+
+    // Update status otomatis
+    useEffect(() => {
         if (totalDibayar > total) {
             alert("Nominal pembayaran melebihi total hutang!");
-            setForm({ ...form, bayar: 0 });
-        } else if (totalDibayar === total) {
-            setForm({ ...form, deb_status: "paid" });
+            setForm((prev) => ({ ...prev, bayar: 0 }));
+            return;
+        }
+
+        if (totalDibayar === total) {
+            setForm((prev) => ({ ...prev, deb_status: "paid" }));
         } else if (totalDibayar > 0) {
-            setForm({ ...form, deb_status: "partial" });
+            setForm((prev) => ({ ...prev, deb_status: "partial" }));
         } else {
-            setForm({ ...form, deb_status: "unpaid" });
+            setForm((prev) => ({ ...prev, deb_status: "unpaid" }));
         }
     }, [form.bayar]);
 
@@ -72,7 +79,6 @@ export default function Edit() {
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-3">
-                        {/* Informasi customer */}
                         <div>
                             <label className="block font-semibold">Nama Customer</label>
                             <input
@@ -85,7 +91,7 @@ export default function Edit() {
                             />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-3 gap-3">
                             <div>
                                 <label className="block font-semibold">Total Hutang</label>
                                 <input
@@ -102,6 +108,16 @@ export default function Edit() {
                                     readOnly
                                     className="w-full rounded-lg bg-gray-100 p-3 border-none"
                                     value={form.deb_paid_amount}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block font-semibold">Sisa Hutang</label>
+                                <input
+                                    type="number"
+                                    readOnly
+                                    className="w-full rounded-lg bg-gray-100 p-3 border-none text-red-600 font-bold"
+                                    value={sisa}
                                 />
                             </div>
                         </div>
