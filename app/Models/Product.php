@@ -19,7 +19,6 @@ class Product extends Model
     protected $keyType = 'int';
 
     protected $fillable = [
-        'prd_code',
         'prd_name',
         'prd_price',
         'prd_stock',
