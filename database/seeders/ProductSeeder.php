@@ -11,7 +11,7 @@ class ProductSeeder extends Seeder
     {
         $products = [
             [
-                'prd_code' => 'PRD-0001',
+
                 'prd_name' => 'Indomie Goreng Original',
                 'prd_price' => 3800,
                 'prd_stock' => 120,
@@ -19,7 +19,7 @@ class ProductSeeder extends Seeder
                 'prd_img' => 'products/Indomie Goreng Original.jpg',
             ],
             [
-                'prd_code' => 'PRD-0002',
+
                 'prd_name' => 'Aqua Botol 600ml',
                 'prd_price' => 4500,
                 'prd_stock' => 200,
@@ -27,7 +27,7 @@ class ProductSeeder extends Seeder
                 'prd_img' => 'products/Aqua Botol 600ml.jpg',
             ],
             [
-                'prd_code' => 'PRD-0003',
+
                 'prd_name' => 'Susu Ultra Milk Cokelat 250ml',
                 'prd_price' => 6500,
                 'prd_stock' => 80,
@@ -35,7 +35,7 @@ class ProductSeeder extends Seeder
                 'prd_img' => 'products/Susu Ultra Milk Cokelat 250ml.jpg',
             ],
             [
-                'prd_code' => 'PRD-0004',
+
                 'prd_name' => 'Beras Cap Topi Koki 5kg',
                 'prd_price' => 69000,
                 'prd_stock' => 40,
@@ -43,7 +43,7 @@ class ProductSeeder extends Seeder
                 'prd_img' => 'products/Beras Cap Topi Koki 5kg.jpg',
             ],
             [
-                'prd_code' => 'PRD-0005',
+
                 'prd_name' => 'Telur Ayam Ras 1 Kg',
                 'prd_price' => 29000,
                 'prd_stock' => 50,
@@ -51,7 +51,7 @@ class ProductSeeder extends Seeder
                 'prd_img' => 'products/Telur Ayam Ras 1 Kg.jpg',
             ],
             [
-                'prd_code' => 'PRD-0006',
+
                 'prd_name' => 'Minyak Goreng Bimoli 1L',
                 'prd_price' => 15500,
                 'prd_stock' => 70,
@@ -59,7 +59,7 @@ class ProductSeeder extends Seeder
                 'prd_img' => 'products/Minyak Goreng Bimoli 1L.jpg',
             ],
             [
-                'prd_code' => 'PRD-0007',
+
                 'prd_name' => 'Gula Pasir Gulaku 1kg',
                 'prd_price' => 14500,
                 'prd_stock' => 65,
@@ -67,7 +67,7 @@ class ProductSeeder extends Seeder
                 'prd_img' => 'products/Gula Pasir Gulaku 1kg.jpg',
             ],
             [
-                'prd_code' => 'PRD-0008',
+
                 'prd_name' => 'Saus ABC Sambal Extra Pedas 275ml',
                 'prd_price' => 9500,
                 'prd_stock' => 90,
@@ -75,7 +75,7 @@ class ProductSeeder extends Seeder
                 'prd_img' => 'products/Saus ABC Sambal Extra Pedas 275ml.jpg',
             ],
             [
-                'prd_code' => 'PRD-0009',
+
                 'prd_name' => 'Rinso Anti Noda 700g',
                 'prd_price' => 18000,
                 'prd_stock' => 40,
@@ -83,7 +83,7 @@ class ProductSeeder extends Seeder
                 'prd_img' => 'products/Rinso Anti Noda 700g.jpg',
             ],
             [
-                'prd_code' => 'PRD-0010',
+
                 'prd_name' => 'Mie Sedaap Ayam Bawang',
                 'prd_price' => 3200,
                 'prd_stock' => 150,
