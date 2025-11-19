@@ -36,13 +36,19 @@ class DebtController extends Controller
     }
 
     // 🔍 Detail hutang
-    public function show($deb_id): Response
+    public function show($deb_id)
     {
         $debt = Debt::with(['customer', 'transaction'])->findOrFail($deb_id);
 
-        return Inertia::render('Debts/Show', [
-            'debt' => $debt,
+        return response()->json([
+            'debt' => $debt
         ]);
+    }
+
+    public function popup($deb_id)
+    {
+        $debt = Debt::with(['customer', 'transaction'])->findOrFail($deb_id);
+        return response()->json(['debt' => $debt]);
     }
 
     // ✏️ Halaman edit hutang
