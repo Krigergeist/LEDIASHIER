@@ -42,7 +42,7 @@ export default function Index() {
             <div className="p-6 space-y-6">
 
                 {/* Filter Waktu */}
-                <div className="p-4 border rounded-lg shadow-sm bg-white">
+                <div className="p-4 border rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.12)] bg-white">
                     <h3 className="font-semibold mb-2">Filter Waktu</h3>
                     <div className="flex flex-wrap items-center gap-4">
                         <input
@@ -74,19 +74,19 @@ export default function Index() {
 
                 {/* Ringkasan */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-4 border rounded-lg shadow-sm bg-white">
+                    <div className="p-4 border rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.12)] bg-white">
                         <p className="text-gray-500">Total Transaksi</p>
                         <h2 className="text-2xl font-bold">{summary.totalTransaksi}</h2>
                     </div>
 
-                    <div className="p-4 border rounded-lg shadow-sm bg-white">
+                    <div className="p-4 border rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.12)] bg-white">
                         <p className="text-gray-500">Total Penjualan</p>
                         <h2 className="text-2xl font-bold">
                             Rp {summary.totalPenjualan?.toLocaleString()}
                         </h2>
                     </div>
 
-                    <div className="p-4 border rounded-lg shadow-sm bg-white">
+                    <div className="p-4 border rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.12)] bg-white">
                         <p className="text-gray-500">Metode Pembayaran</p>
                         <ul className="text-sm mt-2">
                             {Object.entries(summary.metodePembayaran).map(([method, count]) => (
@@ -99,7 +99,7 @@ export default function Index() {
                 </div>
 
                 {/* Grafik Penjualan */}
-                <div className="p-4 border rounded-lg shadow-sm bg-white">
+                <div className="p-4 border rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.12)] bg-white">
                     <h3 className="font-semibold mb-4">Grafik Penjualan</h3>
                     <ResponsiveContainer width="100%" height={300}>
                         <AreaChart data={chartData}>
@@ -119,7 +119,7 @@ export default function Index() {
 
                 {/* Aktivitas Produk dan Hutang */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-4 border rounded-lg shadow-sm bg-white">
+                    <div className="p-4 border rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.12)] bg-white">
                         <h3 className="font-semibold mb-2">Penambahan Produk</h3>
                         <ul className="text-sm space-y-1">
                             {produkDitambah.map((p) => (
@@ -128,7 +128,7 @@ export default function Index() {
                         </ul>
                     </div>
 
-                    <div className="p-4 border rounded-lg shadow-sm bg-white">
+                    <div className="p-4 border rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.12)] bg-white">
                         <h3 className="font-semibold mb-2">Penghapusan Produk</h3>
                         <ul className="text-sm space-y-1">
                             {produkDihapus.map((p) => (
@@ -137,8 +137,8 @@ export default function Index() {
                         </ul>
                     </div>
 
-                    <div className="p-4 border rounded-lg shadow-sm bg-white">
-                        <h3 className="font-semibold mb-2">Perubahan Produk</h3>
+                    <div className="p-4 border rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.12)] bg-white">
+                        <h3 className="font-semibold mb-2">Perubahan Hutang</h3>
                         <ul className="text-sm space-y-1">
                             {hutangPerubahan.map((h) => (
                                 <li key={h.deb_id}>
