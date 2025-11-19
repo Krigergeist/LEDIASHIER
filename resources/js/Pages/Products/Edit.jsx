@@ -7,7 +7,6 @@ export default function Edit() {
 
     const [form, setForm] = useState({
         prd_name: product.prd_name || "",
-        prd_code: product.prd_code || "",
         prd_price: product.prd_price || "",
         prd_stock: product.prd_stock || "",
         prd_description: product.prd_description || "",
@@ -17,9 +16,6 @@ export default function Edit() {
     const [preview, setPreview] = useState(
         product.prd_img ? `/storage/${product.prd_img}` : null
     );
-
-
-
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -37,6 +33,8 @@ export default function Edit() {
         }
     };
 
+    const MAX_PRICE = 999999999;
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -49,15 +47,6 @@ export default function Edit() {
                     <h1 className="text-xl font-bold mb-4">Edit Produk</h1>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        <div>
-                            <label className="block font-semibold">Kode Produk</label>
-                            <input
-                                type="text"
-                                value={form.prd_code}
-                                onChange={(e) => setForm({ ...form, prd_code: e.target.value })}
-                                className="w-full bg-[#E8F0FE] p-3 rounded-lg border-none shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)]"
-                            />
-                        </div>
 
                         <div>
                             <label className="block font-semibold">Nama Produk</label>
@@ -73,18 +62,38 @@ export default function Edit() {
                             <div className="w-1/2">
                                 <label className="block font-semibold">Harga</label>
                                 <input
+                                    min={0}
+                                    max={MAX_PRICE}
                                     type="number"
                                     value={form.prd_price}
-                                    onChange={(e) => setForm({ ...form, prd_price: e.target.value })}
+                                    onChange={(e) => {
+                                        let val = Number(e.target.value);
+
+                                        if (val > MAX_PRICE) val = MAX_PRICE;
+                                        if (val < 0) val = 0;
+
+                                        setForm({ ...form, prd_price: val });
+                                    }}
+                                    onFocus={(e) => e.target.select()}
                                     className="w-full bg-[#E8F0FE] p-3 rounded-lg border-none shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)]"
                                 />
                             </div>
                             <div className="w-1/2">
                                 <label className="block font-semibold">Stok</label>
                                 <input
+                                    min={0}
+                                    max={MAX_PRICE}
                                     type="number"
                                     value={form.prd_stock}
-                                    onChange={(e) => setForm({ ...form, prd_stock: e.target.value })}
+                                    onChange={(e) => {
+                                        let val = Number(e.target.value);
+
+                                        if (val > MAX_PRICE) val = MAX_PRICE;
+                                        if (val < 0) val = 0;
+
+                                        setForm({ ...form, prd_stock: val });
+                                    }}
+                                    onFocus={(e) => e.target.select()}
                                     className="w-full bg-[#E8F0FE] p-3 rounded-lg border-none shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)]"
                                 />
                             </div>
