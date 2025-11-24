@@ -50,7 +50,7 @@ export default function Dashboard() {
                         </Link>
                         <Link
                             href={route("products.create")}
-                            className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"
+                            className="w-full bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg transition"
                         >
                             + Tambah Produk
                         </Link>
