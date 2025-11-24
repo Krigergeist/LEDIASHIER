@@ -67,7 +67,7 @@ export default function Index() {
                             onClick={handleExport}
                             className="border border-green-600 text-green-700 px-4 py-2 rounded-lg hover:bg-green-100"
                         >
-                            Download CSV
+                            Download PDF
                         </button>
                     </div>
                 </div>
