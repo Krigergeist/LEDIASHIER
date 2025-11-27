@@ -8,3 +8,4 @@ npm install
 npm run dev
 php artisan serve
 copy images and products folder to C:\laragon\www\LEDIASHIER\storage\app\public
+php artisan storage:link
