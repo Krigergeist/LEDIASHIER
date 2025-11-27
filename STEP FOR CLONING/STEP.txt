@@ -1,0 +1,10 @@
+git clone https://github.com/Krigergesit/
+https://github.com/Krigergeist/LEDIASHIER
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+npm install
+npm run dev
+php artisan serve
+copy images and products folder to C:\laragon\www\LEDIASHIER\storage\app\public
