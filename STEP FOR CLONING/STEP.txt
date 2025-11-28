@@ -9,3 +9,12 @@ npm run dev
 php artisan serve
 copy images and products folder to C:\laragon\www\LEDIASHIER\storage\app\public
 php artisan storage:link
+
+how to install node.js and npm on windows 10
+
+https://nodejs.org
+node -v
+npm -v
+cd C:\laragon\www\Test\LEDIASHIER
+npm install
+npm run dev
