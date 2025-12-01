@@ -12,7 +12,7 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->bigIncrements('prd_id');
-            $table->string('prd_name');
+            $table->string('prd_name')->unique();
             $table->decimal('prd_price', 12, 2)->nullable();
             $table->integer('prd_stock')->nullable();
             $table->text('prd_description')->nullable();

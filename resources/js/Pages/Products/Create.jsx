@@ -1,24 +1,24 @@
 import React, { useState } from "react";
-import { Head, router, usePage } from "@inertiajs/react";
+import { Head, router, useForm, usePage } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
 export default function Create() {
     const { auth } = usePage().props;
 
-    const [form, setForm] = useState({
+    const { data, setData, post, errors, processing } = useForm({
         prd_name: "",
-
         prd_price: "",
         prd_stock: "",
         prd_description: "",
         prd_img: null,
     });
 
+
     const [preview, setPreview] = useState(null);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        router.post(route("products.store"), form);
+        post(route("products.store"));
     };
 
     const handleBack = () => {
@@ -41,43 +41,40 @@ export default function Create() {
                     <h1 className="text-xl font-bold mb-4">Tambah Produk</h1>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
-
-                        {/* <div>
-                            <label className="block font-semibold">Kode Produk</label>
-                            <input
-                                type="text"
-                                value={form.prd_code}
-                                onChange={(e) => setForm({ ...form, prd_code: e.target.value })}
-                                className="w-full bg-[#E8F0FE] p-3 rounded-lg border-none shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)]"
-                            />
-                        </div> */}
-
                         <div>
                             <label className="block font-semibold">Nama Produk</label>
                             <input
                                 type="text"
-                                value={form.prd_name}
-                                onChange={(e) => setForm({ ...form, prd_name: e.target.value })}
+                                value={data.prd_name}
+                                onChange={(e) => setData("prd_name", e.target.value)}
                                 className="w-full bg-[#E8F0FE] p-3 rounded-lg border-none shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)]"
                             />
+
+                            {errors.prd_name && (
+                                <p className="text-red-600 text-sm mt-1">{errors.prd_name}</p>
+                            )}
                         </div>
+
 
                         <div className="flex gap-4">
                             <div className="w-1/2">
                                 <label className="block font-semibold">Harga</label>
                                 <input
                                     type="number"
-                                    value={form.prd_price}
-                                    onChange={(e) => setForm({ ...form, prd_price: e.target.value })}
+                                    value={data.prd_price}
+                                    onChange={(e) => setData("prd_price", e.target.value)}
                                     className="w-full bg-[#E8F0FE] p-3 rounded-lg border-none shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)]"
-                                />
-                            </div>
+                                /></div>
+                            {errors.prd_price && (
+                                <p className="w-full bg-[#E8F0FE] p-3 rounded-lg border-none shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)]">{errors.prd_price}</p>
+                            )}
+
                             <div className="w-1/2">
                                 <label className="block font-semibold">Stok</label>
                                 <input
                                     type="number"
-                                    value={form.prd_stock}
-                                    onChange={(e) => setForm({ ...form, prd_stock: e.target.value })}
+                                    value={data.prd_stock}
+                                    onChange={(e) => setData("prd_stock", e.target.value)}
                                     className="w-full bg-[#E8F0FE] p-3 rounded-lg border-none shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)]"
                                 />
                             </div>
@@ -86,13 +83,19 @@ export default function Create() {
                         <div>
                             <label className="block font-semibold">Deskripsi</label>
                             <textarea
-                                value={form.prd_description}
+                                type="text"
+                                value={data.prd_description}
                                 onChange={(e) =>
-                                    setForm({ ...form, prd_description: e.target.value })
+                                    setData("prd_description", e.target.value)
                                 }
                                 className="w-full bg-[#E8F0FE] p-3 rounded-lg border-none shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)]"
                             ></textarea>
                         </div>
+
+
+
+
+
 
                         <div>
                             <label className="block font-semibold mb-2">Gambar Produk</label>
@@ -129,12 +132,18 @@ export default function Create() {
                                     className="hidden"
                                     onChange={(e) => {
                                         const file = e.target.files[0];
-                                        setForm({ ...form, prd_img: file });
+                                        setData("prd_img", file);
                                         if (file) setPreview(URL.createObjectURL(file));
                                     }}
                                 />
+                                {errors.prd_img && (
+                                    <p className="text-red-600 text-sm mt-1">{errors.prd_img}</p>
+                                )}
                             </div>
                         </div>
+
+
+
 
                         <div className="mt-6">
                             <button
