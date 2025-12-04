@@ -136,7 +136,7 @@ export default function Create() {
                     <h1 className="text-xl font-bold mb-4">Buat Transaksi</h1>
 
                     <form onSubmit={handleSubmit}>
-                        {/* METODE */}
+                        {/* METODE
                         <div className="mb-3">
                             <label className="font-semibold block">Metode Pembayaran</label>
                             <select
@@ -147,10 +147,10 @@ export default function Create() {
                                 className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 focus:ring-0 border-none rounded-xl"
                             >
                                 <option value="cash">Tunai</option>
-                                {/* <option value="credit">Kredit</option>
-                                <option value="debit">Debit</option> */}
+                                <option value="credit">Kredit</option>
+                                <option value="debit">Debit</option>
                             </select>
-                        </div>
+                        </div> */}
 
                         {/* PRODUK */}
                         <h2 className="font-semibold mb-2">Cari Produk</h2>
@@ -298,12 +298,14 @@ export default function Create() {
                                 Kembali
                             </button>
 
-                            <button
-                                type="submit"
-                                className="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-                            >
-                                Simpan
-                            </button>
+                            {!showDebt && (
+                                <button
+                                    type="submit"
+                                    className="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                                >
+                                    Simpan
+                                </button>
+                            )}
                         </div>
 
                         {errorMessage && (
