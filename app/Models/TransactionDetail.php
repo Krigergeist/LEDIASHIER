@@ -16,6 +16,7 @@ class TransactionDetail extends Model
 
     public function product()
     {
-        return $this->belongsTo(\App\Models\Product::class, 'tsnd_prd_id', 'prd_id');
+        return $this->belongsTo(\App\Models\Product::class, 'tsnd_prd_id', 'prd_id')
+            ->withTrashed();
     }
 }
