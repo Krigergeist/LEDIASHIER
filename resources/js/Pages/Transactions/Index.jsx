@@ -93,7 +93,7 @@ export default function Index() {
                                             <ul className="list-disc ml-4">
                                                 {tx.details.map((d) => (
                                                     <li key={d.tsnd_id}>
-                                                        {d.product?.prd_name ?? "Produk dihapus"} ({d.tsnd_qty})
+                                                        {d.product?.prd_name || d.tsnd_product_name} ({d.tsnd_qty})
                                                     </li>
                                                 ))}
                                             </ul>
