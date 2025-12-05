@@ -14,8 +14,6 @@ use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Validation\Rule;
 
-
-
 class ProductController extends Controller
 {
     public function index(Request $request)
@@ -59,7 +57,6 @@ class ProductController extends Controller
         ]);
     }
 
-
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -90,8 +87,6 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan!');
     }
 
-
-
     public function show(Product $product)
     {
         return Inertia::render('Products/Show', ['product' => $product]);
@@ -101,12 +96,15 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $data = $request->validate([
-
-            'prd_name' => 'required|string',
-            'prd_price' => 'nullable|numeric',
-            'prd_stock' => 'nullable|integer',
+            'prd_name' => [
+                'required',
+                'string',
+                Rule::unique('products', 'prd_name')->ignore($product->prd_id, 'prd_id')
+            ],
+            'prd_price' => 'required|numeric',
+            'prd_stock' => 'required|integer',
             'prd_description' => 'nullable|string',
-            'prd_img' => 'nullable|image|max:2048',
+            'prd_img' => 'nullable|image|mimes:jpg,jpeg,png|max:4096',
         ]);
 
         // ❗ Jika tidak upload gambar → pertahankan gambar lama
@@ -117,28 +115,29 @@ class ProductController extends Controller
         // Jika upload gambar baru
         if ($request->hasFile('prd_img')) {
 
-            // Hapus gambar lama
-            if ($product->prd_img && Storage::exists("public/" . $product->prd_img)) {
-                Storage::delete("public/" . $product->prd_img);
+            // Hapus gambar sebelumnya
+            if ($product->prd_img && Storage::exists("public/{$product->prd_img}")) {
+                Storage::delete("public/{$product->prd_img}");
             }
 
             $image = $request->file('prd_img');
-            $filename = time() . '.jpg';
+            $filename = time() . Str::uuid() . '.jpg';
 
             $manager = new ImageManager(new Driver());
             $img = $manager->read($image)
                 ->scale(width: 800)
                 ->encodeByExtension('jpg', quality: 75);
 
-            Storage::put("public/products/" . $filename, (string) $img);
+            Storage::put("public/products/{$filename}", (string) $img);
 
-            $data['prd_img'] = "products/" . $filename;
+            $data['prd_img'] = "products/{$filename}";
         }
 
         $product->update($data);
 
         return Redirect::route('products.index')->with('success', 'Produk berhasil diupdate');
     }
+
     public function destroy(Product $product)
     {
         $product->delete();
