@@ -29,7 +29,7 @@ export default function Index() {
             <Head title="Hutang" />
 
             <div className="p-6 flex flex-col">
-                <div className="flex flex-col p-[20px] bg-white rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.12)] space-y-6">
+                <div className="flex flex-col p-6 bg-white rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.12)] space-y-6">
                     {/* Header dan tombol tambah */}
                     <div className="flex flex-row items-center justify-between ">
                         <h1 className="text-xl font-bold">Daftar Hutang</h1>
