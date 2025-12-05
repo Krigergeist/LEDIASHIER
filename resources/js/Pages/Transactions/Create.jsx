@@ -7,7 +7,7 @@ export default function Create() {
 
     const [form, setForm] = useState({
         csm_name: "",
-        csm_nik: "",
+        csm_nik: "none",
         csm_phone: "",
         csm_address: "",
         tsn_metode: "cash",
@@ -336,16 +336,16 @@ export default function Create() {
                                     placeholder="Nama Customer *"
                                     value={form.csm_name}
                                     onChange={(e) => setForm({ ...form, csm_name: e.target.value })}
-                                    className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 mb-2 focus:ring-0 border-none col-span-2"
+                                    className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 mb-2 focus:ring-0 border-none "
                                     required
                                 />
-                                <input
+                                {/* <input
                                     type="text"
                                     placeholder="NIK"
                                     value={form.csm_nik}
                                     onChange={(e) => setForm({ ...form, csm_nik: e.target.value })}
                                     className="w-full rounded-lg bg-[#E8F0FE] placeholder-[#6F6F6F] shadow-[inset_0_4px_12px_rgba(0,0,0,0.12)] p-3 mb-2 focus:ring-0 border-none"
-                                />
+                                /> */}
                                 <input
                                     type="text"
                                     placeholder="Nomor Telepon"
