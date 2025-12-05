@@ -14,12 +14,20 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
 
                     <div>
                         {auth.user ? (
-                            <Link
-                                href={route('dashboard')}
-                                className="bg-sky-500 px-[20px] py-[15px] text-2x1 text-white font-bold rounded-lg shadow hover:bg-sky-600 transition"
-                            >
-                                Dashboard
-                            </Link>
+                            <div className='flex gap-4'>
+                                <Link
+                                    href={route('dashboard')}
+                                    className="bg-sky-500 px-[20px] py-[15px] text-2x1 text-white font-bold rounded-lg shadow hover:bg-sky-600 transition"
+                                >
+                                    Dashboard
+                                </Link>
+                                <Link
+                                    href={route('support')}
+                                    className="bg-sky-500 px-[20px] py-[15px] text-2x1 text-white font-bold rounded-lg shadow hover:bg-sky-600 transition"
+                                >
+                                    Bantuan
+                                </Link>
+                            </div>
                         ) : (
                             <>
                                 <Link
@@ -39,7 +47,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                         Selamat Datang di Lediashier
                     </h1>
                     <p className="text-lg font-medium text-black max-w-2xl mb-8">
-                        Framework PHP elegan untuk pengembangan aplikasi web modern.
+                        Aplikasi web kasir online untuk mencatat dan mengelola transaksi penjualan.
                     </p>
 
                     <div className="flex flex gap-4 items-center justify-center text-center">
